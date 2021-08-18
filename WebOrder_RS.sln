@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31313.79
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOrder_RS", "WebOrder_RS\WebOrder_RS.csproj", "{30017138-C96B-48C4-96CE-C79AC17BE095}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30017138-C96B-48C4-96CE-C79AC17BE095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30017138-C96B-48C4-96CE-C79AC17BE095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30017138-C96B-48C4-96CE-C79AC17BE095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30017138-C96B-48C4-96CE-C79AC17BE095}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CFF767CC-C245-42C8-A072-48ABD930D4E7}
+	EndGlobalSection
+EndGlobal
