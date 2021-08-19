@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import '../css/Login.css';
 import logo2 from '../Image/logo2.png'
-//import { LoginCss } from '../css/Login.css';
 
 export class Login extends Component {
     static displayName = Login.name;
@@ -8,7 +8,6 @@ export class Login extends Component {
     constructor(props) {
         super(props);
         this.state = { isToggleOn: true };
-        require("../css/Login.css");
         this.loginClick = this.loginClick.bind(this);
     }
 
@@ -41,29 +40,27 @@ export class Login extends Component {
 
     render() {
         return (
-            <div >
-                <div className="wrapper fadeInDown">
-                    <div id="formContent">
+            <div className="wrapper fadeInDown">
+                <div id="formContent">
 
-                        <div className="fadeIn first">
+                    <div className="fadeIn first">
 
-                            <a className="navbar-brand top-navbar-brand" href="#"><img src={logo2} /> APEX</a>
-                        </div>
-
-
-                        <form>
-
-                            <input type="text" id="login" className="fadeIn second" name="login" placeholder="login" />
-                            <input type="password" id="password" className="fadeIn third" name="login" placeholder="password" />
-                            <input type="button" onClick={this.loginClick} className="fadeIn fourth " value="Log In" />
-                        </form>
+                        <a className="navbar-brand top-navbar-brand" href="#"><img src={logo2} /> APEX</a>
+                    </div>
 
 
-                        <div id="formFooter">
+                    <form>
 
-                        </div>
+                        <input type="text" id="login" className="fadeIn second" name="login" placeholder="login" />
+                        <input type="password" id="password" className="fadeIn third" name="login" placeholder="password" />
+                        <input type="button" onClick={this.loginClick} className="fadeIn fourth " value="Log In" />
+                    </form>
+
+
+                    <div id="formFooter">
 
                     </div>
+
                 </div>
             </div>
         );

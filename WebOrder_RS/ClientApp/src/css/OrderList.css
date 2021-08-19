@@ -1,0 +1,182 @@
+﻿.navbar-nav.navbar-right:last-child {
+    margin-right: 10px;
+}
+
+.modal-header, .close {
+    background-color: #28a745;
+    color: white;
+    text-align: center;
+    font-size: 2em;
+}
+
+.modal-footer {
+    background-color: #f9f9f9;
+    margin-top: 25px;
+}
+
+#btn_Password {
+    background-color: #428bca;
+    border-color: #428bca;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 170px;
+    overflow-x: hidden;
+}
+
+
+#wrap {
+    background-image: -ms-linear-gradient(top, #FFFFFF 0%, #D3D8E8 100%);
+    /* Mozilla Firefox */
+    background-image: -moz-linear-gradient(top, #FFFFFF 0%, #D3D8E8 100%);
+    /* Opera */
+    background-image: -o-linear-gradient(top, #FFFFFF 0%, #D3D8E8 100%);
+    /* Webkit (Safari/Chrome 10) */
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FFFFFF), color-stop(1, #D3D8E8));
+    /* Webkit (Chrome 11+) */
+    background-image: -webkit-linear-gradient(top, #FFFFFF 0%, #D3D8E8 100%);
+    /* W3C Markup, IE10 Release Preview */
+    background-image: linear-gradient(to bottom, #FFFFFF 0%, #D3D8E8 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+legend div {
+    color: #004071;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+legend {
+    color: #004071;
+    font-size: 1.2rem;
+    margin-bottom: 0rem;
+    font-weight: bold;
+}
+
+.signup-btn {
+    background: #79bc64;
+    background-image: -webkit-linear-gradient(top, #79bc64, #578843);
+    background-image: -moz-linear-gradient(top, #79bc64, #578843);
+    background-image: -ms-linear-gradient(top, #79bc64, #578843);
+    background-image: -o-linear-gradient(top, #79bc64, #578843);
+    background-image: linear-gradient(to bottom, #79bc64, #578843);
+    -webkit-border-radius: 4;
+    -moz-border-radius: 4;
+    border-radius: 4px;
+    text-shadow: 0px 1px 0px #898a88;
+    -webkit-box-shadow: 0px 0px 0px #a4e388;
+    -moz-box-shadow: 0px 0px 0px #a4e388;
+    box-shadow: 0px 0px 0px #a4e388;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    border: solid #3b6e22 1px;
+    text-decoration: none;
+}
+
+    .signup-btn:hover {
+        background: #79bc64;
+        background-image: -webkit-linear-gradient(top, #79bc64, #5e7056);
+        background-image: -moz-linear-gradient(top, #79bc64, #5e7056);
+        background-image: -ms-linear-gradient(top, #79bc64, #5e7056);
+        background-image: -o-linear-gradient(top, #79bc64, #5e7056);
+        background-image: linear-gradient(to bottom, #79bc64, #5e7056);
+        text-decoration: none;
+    }
+
+.navbar-default .navbar-brand {
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.form .form-control {
+    margin-bottom: 10px;
+}
+
+@media (min-width:768px) {
+    #home {
+    }
+
+        #home .slogan {
+            color: #0e385f;
+            line-height: 29px;
+            font-weight: bold;
+        }
+}
+
+.accordionBtn {
+    width: 100%;
+}
+
+.btn-circle.btn-xl {
+    width: 70px;
+    height: 70px;
+    padding: 10px 16px;
+    border-radius: 35px;
+    font-size: 24px;
+    line-height: 1.33;
+}
+
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    padding: 6px 0px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.42857;
+}
+
+.no-padding-LR {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+.no-padding-TB9 {
+    padding-top: 0rem;
+    padding-bottom: 0rem;
+}
+
+.description-red {
+    font-size: .7rem;
+}
+
+.form-control-xs {
+    font-size: .9rem !important;
+}
+
+.bg-F0 {
+    background-color: #F0F0F0;
+}
+
+.rack-Lab {
+    width: 218.42px;
+}
+
+.motor-Dimension {
+    width: 136.1px;
+}
+
+.thumbnail {
+    border: 0;
+}
+
+.GRPstp1Lab {
+    width: 149.17px;
+}
+
+.GRPstp1Lab2 {
+    width: 77.31px;
+}
+
+.grid-bd > dt, .grid-bd > div {
+    border: 1px solid #dee2e6 !important
+}
+
+.color-Apex {
+    color: #004071;
+}

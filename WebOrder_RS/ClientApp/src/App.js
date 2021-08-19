@@ -1,22 +1,34 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+} from "react-router-dom";
 import { Layout } from './components/Layout';
-import { Login } from './components/Login';
+import { OrderList } from './components/OrderList';
 import { FetchData } from './components/FetchData';
 import { Counter } from './components/Counter';
+import { Login } from './components/Login';
 
-import './custom.css'
+import './custom.css';
+
 
 export default class App extends Component {
-  static displayName = App.name;
+    static displayName = App.name;
 
-  render () {
-    return (
-        <div>
-            <Route exact path='/' component={Login} />
-        <Route path='/counter' component={Counter} />
-        <Route path='/fetch-data' component={FetchData} />
-            </div>
-    );
-  }
+    render() {
+        return (
+            <Router>
+                <Switch>
+                    <Route path="/Login"  component={Login} />
+                    <Layout>
+                        <Route exact path='/' component={OrderList} />
+                        <Route path='/Counter' component={Counter} />
+                        <Route path='/Fetch-data' component={FetchData} />
+                    </Layout>
+                </Switch>
+            </Router>
+        );
+    }
 }
+
