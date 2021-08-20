@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import moment from 'react-moment';
+import Moment from 'react-moment';
+import { NewOrder } from './NewOrder';
+
 
 export class OrderList extends Component {
     static displayName = OrderList.name;
@@ -149,7 +151,7 @@ export class OrderList extends Component {
                 {forecasts[0].Data.map((forecast, index) =>
                     <dl class="row no-gutters">
                         <dd class="col-sm-12">
-                            <h4><span class="badge badge-secondary">{moment(forecast.OrderDate).format('YYYY-MM-DD')} </span></h4>
+                            <h4><span class="badge badge-secondary"><Moment format="YYYY/MM/DD">{forecast.OrderDate}</Moment> </span></h4>
                             <div id="accordion">
                                 <div className="card">
                                     <div className="card-header no-padding-LR no-padding-TB " id={"heading" + index}>
@@ -300,9 +302,6 @@ export class OrderList extends Component {
             : OrderList.renderOrderTable(this.state.forecasts2);
         return (
             <main role="main" className="container-fluid">
-                <br />
-                <br />
-                <br />
                 <PageTitle head={<h3>Orders to APEX</h3>} />
                 <div className="row">
                     <div className="col-lg-4 col-lg-offset-4"> <input type="search" id="search" value="" className="form-control" placeholder="Search" /> </div>

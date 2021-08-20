@@ -57,7 +57,7 @@ export class NavMenu extends Component {
                                 </NavItem>
 
                                 <form className="form-inline my-2 my-lg-0">
-                                    <input className="btn btn-outline-success my-2 my-sm-0" formaction="./login.html" value="Sing Out" type="submit" />
+                                    <input className="btn btn-outline-success my-2 my-sm-0" formaction="/Login" value="Sing Out" type="submit" />
                                 </form>
                             </ul>
 

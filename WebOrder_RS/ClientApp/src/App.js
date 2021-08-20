@@ -9,7 +9,12 @@ import { OrderList } from './components/OrderList';
 import { FetchData } from './components/FetchData';
 import { Counter } from './components/Counter';
 import { Login } from './components/Login';
+import 'bootstrap/dist/js/bootstrap.min.js';
 
+import fontawesome from '@fortawesome/fontawesome'
+import { faUser, faKey } from '@fortawesome/fontawesome-free-solid'
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.css';
 
 
