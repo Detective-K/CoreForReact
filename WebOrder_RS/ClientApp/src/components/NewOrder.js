@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Select from 'react-select';
-import Omnibar from 'omnibar';
-import ResultItem from './OmbibarResultItem';
-import GitHubSearchExtension from './GitHubSearchExtension';
+import Search from 'react-search';
 
 export class NewOrder extends React.Component {
     static displayName = NewOrder.name;
@@ -17,20 +15,45 @@ export class NewOrder extends React.Component {
             { value: 'CNY', label: 'CNY' },
             { value: 'EUR', label: 'EUR' }
         ];
-        const options = [
-            { value: 'TWD', label: 'TWD' },
-            { value: 'USD', label: 'USD' },
-            { value: 'CNY', label: 'CNY' },
+        const Delivery = [
+            { value: 'A', label: 'BY UPS' },
+            { value: 'B', label: 'BY DHL' },
+            { value: 'C', label: 'BY TNT' },
+            { value: 'D', label: 'BY Fedex' },
+            { value: 'E', label: 'BY EMS' },
+            { value: 'F', label: 'BY Aircargo' },
+            { value: 'EUR', label: 'EUR' },
             { value: 'EUR', label: 'EUR' }
         ];
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
-        this.state = { Currency: Currency, selectedValue: { value: CustInfo[0].countryCode, label: CustInfo[0].countryCode } };
+        this.state = { Currency: Currency, Delivery: Delivery, CustInfo: CustInfo, repos: [], CurrencyValue: { value: CustInfo[0].countryCode, label: CustInfo[0].countryCode } };
     }
-    handleChange(value) {
-        this.setState({ selectedValue: value })
+
+    handleItemsChange(items) {
+        console.log(items);
+        if (items.length>0) {
+            this.state.CustInfo[0].custId = items[0].value.substring(0, items[0].value.indexOf("/"));
+        }
+
+    }
+    getItemsAsync(searchValue, cb) {
+        let url = ` https://localhost:44363/api/Order/CustSearchInfo?CustId=${searchValue}`
+        fetch(url).then((response) => {
+            return response.json();
+        }).then((results) => {
+            if (results != undefined) {
+                let items = results.map(
+                    (res, i) => {
+                        return {
+                            id: i, value: res.CustId + "/" + res.Name
+                        }
+                    })
+                this.setState({ repos: items })
+                cb(searchValue)
+            }
+        });
     }
     render() {
-
         return (
             <div>
                 <button type="button" className="btn btn-success btn-sm" data-toggle="modal" data-target="#modalSignUP">
@@ -47,15 +70,19 @@ export class NewOrder extends React.Component {
                             </div>
                             <div className="modal-body">
                                 <form>
-                                    <Omnibar
-                                        placeholder="Search Cust"
-                                        maxResults={10}
-                                        maxViewableResults={5}
-                                        extensions={[
-                                            GitHubSearchExtension,
-                                        ]}>
-                                        {ResultItem}
-                                    </Omnibar>
+                                    <div className="form-group">
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text" id="basic-addon1">Cust</span>
+                                            </div>
+                                            <Search type="text" className="form-control" items={this.state.repos}
+                                                placeholder=""
+                                                multiple={true}
+                                                NotFoundPlaceholder="Please search for some cust ID"
+                                                getItemsAsync={this.getItemsAsync.bind(this)}
+                                                onItemsChanged={this.handleItemsChange.bind(this)} />
+                                        </div>
+                                    </div>
                                     <div className="form-group">
                                         <div className="input-group mb-3">
                                             <div className="input-group-prepend">
@@ -71,7 +98,7 @@ export class NewOrder extends React.Component {
                                             </div>
                                             <div className="form-control p-0">
                                                 <Select id="currencySel"
-                                                    value={this.state.selectedValue}
+                                                    value={this.state.CurrencyValue}
                                                     options={this.state.Currency}
                                                     onChange={value => this.handleChange(value)}
                                                 />
@@ -84,10 +111,11 @@ export class NewOrder extends React.Component {
                                             <div class="input-group-prepend">
                                                 <span className="input-group-text" id="basic-addon1">Delivery way</span>
                                             </div>
-                                            <select className="form-control" id="deliverySel">
-                                                <option>By UPS</option>
-                                                <option>BY DHL</option>
-                                            </select>
+                                            <div className="form-control p-0">
+                                                <Select id="deliverySel"
+                                                    options={this.state.Delivery}
+                                                    onChange={value => this.handleChange(value)} />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="form-group">
