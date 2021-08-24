@@ -17,6 +17,7 @@ export class NavMenu extends Component {
         this.state = {
             collapsed: true
         };
+        this.SingOutClick = this.SingOutClick.bind(this);
     }
 
     toggleNavbar() {
@@ -25,6 +26,10 @@ export class NavMenu extends Component {
         });
     }
 
+    SingOutClick() {
+        localStorage.clear();
+        window.location.href = "/Login";
+    }
 
     render() {
         return (
@@ -57,7 +62,7 @@ export class NavMenu extends Component {
                                 </NavItem>
 
                                 <form className="form-inline my-2 my-lg-0">
-                                    <input className="btn btn-outline-success my-2 my-sm-0" formaction="/Login" value="Sing Out" type="submit" />
+                                    <input className="btn btn-outline-success my-2 my-sm-0" onClick={ this.SingOutClick} value="Sing Out" type="submit" />
                                 </form>
                             </ul>
 

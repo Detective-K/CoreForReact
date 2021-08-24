@@ -25,7 +25,7 @@ export default class App extends Component {
         return (
             <Router>
                 <Switch>
-                    <Route path="/Login"  component={Login} />
+                    <Route path="/Login" component={Login} />
                     <Layout>
                         <Route exact path='/' component={OrderList} />
                         <Route path='/Counter' component={Counter} />

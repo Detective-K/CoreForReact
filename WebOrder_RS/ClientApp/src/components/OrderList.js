@@ -38,7 +38,7 @@ export class OrderList extends Component {
         });
         const data2 = await response2.json();
 
-        this.setState({ forecasts: data, forecasts2: data2, loading: false });
+        //this.setState({ forecasts: data, forecasts2: data2, loading: false });
     }
     static renderOrderTable(forecasts) {
 

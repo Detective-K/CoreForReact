@@ -10,6 +10,7 @@ export class Login extends Component {
         this.state = { isToggleOn: true };
         require("../css/Login.css");
         this.loginClick = this.loginClick.bind(this);
+        localStorage.clear();
     }
 
     loginClick() {
