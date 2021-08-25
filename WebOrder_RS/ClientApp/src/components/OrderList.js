@@ -17,6 +17,7 @@ export class OrderList extends Component {
         this.populateApiData();
     }
 
+
     async populateApiData() {
         const feStr = {};
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
@@ -38,15 +39,17 @@ export class OrderList extends Component {
         });
         const data2 = await response2.json();
 
-        //this.setState({ forecasts: data, forecasts2: data2, loading: false });
+        this.setState({ forecasts: data, forecasts2: data2, loading: false });
     }
     static renderOrderTable(forecasts) {
 
         const SaleInfo = JSON.parse(localStorage.getItem("SaleInfo"));
-
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
-        const test = { 'SaleInfo': JSON.stringify(SaleInfo), 'CustInfo': JSON.stringify(CustInfo) };
         const filterMember = "BAC001";
+
+        const updateClick = () => {
+            var aa = "d";
+        };
 
         let get_lub = (fetObj) => {
             let temp = fetObj.ods.Lubrication;
@@ -145,7 +148,6 @@ export class OrderList extends Component {
             }
             return temp;
         }
-
         return (
             <div>
                 {forecasts[0].Data.map((forecast, index) =>
@@ -241,6 +243,9 @@ export class OrderList extends Component {
                                                                                             <dt className="col-sm-12 description-red text-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;torque from application.</dt>
                                                                                             <dt className="col-sm-12 description-red text-danger">*&nbsp;Price for reference only. For the real price, refer to P/I.</dt>
                                                                                         </dl>
+                                                                                        <dl className="row">
+                                                                                            <button type="button"  onClick={updateClick} className="btn btn-success">Update</button>
+                                                                                        </dl>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -280,10 +285,6 @@ export class OrderList extends Component {
         );
     }
 
-    addClick() {
-
-    }
-
     render() {
         const PageTitle = (props) => {
             return (
@@ -306,7 +307,7 @@ export class OrderList extends Component {
                 <div className="row">
                     <div className="col-lg-4 col-lg-offset-4"> <input type="search" id="search" value="" className="form-control" placeholder="Search" /> </div>
                     <div className="col-lg-4 col-lg-offset-4">
-                        <NewOrder onClick={this.loginClick} btname="Add New Order" />
+                        <NewOrder  btname="Add New Order" />
                     </div>
                 </div>
                 <br />

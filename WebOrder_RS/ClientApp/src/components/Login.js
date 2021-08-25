@@ -35,8 +35,6 @@ export class Login extends Component {
                 window.location.href = "/";
             }
             alert(JS["message"].toString());
-
-            console.log(JS);
         }).catch(error => console.error('Error:', error))
     }
 
