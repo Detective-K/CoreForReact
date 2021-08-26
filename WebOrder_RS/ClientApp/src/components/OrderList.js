@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import { faUserCheck } from '@fortawesome/fontawesome-free-solid';
+import React, { Component, useState } from 'react';
 import Moment from 'react-moment';
 import { NewOrder } from './NewOrder';
 
@@ -10,7 +11,9 @@ export class OrderList extends Component {
         super(props);
         this.state = { isToggleOn: true };
         require("../css/OrderList.css");
-        this.state = { forecasts: [], forecasts2: [], loading: true };
+        this.state = {
+            forecasts: [], forecasts2: [], updateDetail: [{ sumTotal: "" }], loading: true
+        };
     }
 
     componentDidMount() {
@@ -41,14 +44,36 @@ export class OrderList extends Component {
 
         this.setState({ forecasts: data, forecasts2: data2, loading: false });
     }
-    static renderOrderTable(forecasts) {
+    static renderOrderTable(forecasts , state) {
 
         const SaleInfo = JSON.parse(localStorage.getItem("SaleInfo"));
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         const filterMember = "BAC001";
 
-        const updateClick = () => {
-            var aa = "d";
+        const changeData = (data, e) => {
+            var aa = "cc";
+            switch (e.target.id) {
+                case "Qty":
+                    data.Qty = e.target.value;
+                    data.SubTot = parseFloat(e.target.value) * parseFloat(data.Price);  
+                    break;
+                case "Memo":
+                    data.Memo = e.target.value;
+                    break;
+                default:
+            }
+        }
+
+ 
+
+        const updateClick = async (data, e) => {
+            let feStr = {};
+            feStr["OrderId"] = data.ods.OrderId;
+            feStr["OrderDetailId"] = data.ods.OrderDetailId;
+            feStr["Qty"] = data.ods.Qty;
+            feStr["Memo"] = data.ods.Memo;
+            feStr["SubTot"] = data.ods.SubTot;
+            
         };
 
         let get_lub = (fetObj) => {
@@ -213,7 +238,7 @@ export class OrderList extends Component {
                                                                                     <div className="modal-body">
                                                                                         <dl className="row">
                                                                                             <dt className="col-5 col-sm-5">{"Quantity"}</dt>
-                                                                                            <dd className="col-7 col-sm-7">{forecast2.ods.Qty}</dd>
+                                                                                            <dd className="col-7 col-sm-7"><input id="Qty" type="text" defaultValue={forecast2.ods.Qty} onChange={(e) => changeData(forecast2.ods, e)} className="form-control" /></dd>
                                                                                             <dt className="col-5 col-sm-5">Unit Price</dt>
                                                                                             <dd className="col-7 col-sm-7">{CustInfo.length > 0 ? (filterMember.indexOf(CustInfo[0].custId) > 0 ? "****" : forecast2.ods.Price) : forecast2.ods.Price}</dd>
                                                                                             <dt className="col-5 col-sm-5">Part No.</dt>
@@ -231,7 +256,7 @@ export class OrderList extends Component {
                                                                                             <dt className="col-5 col-sm-5">Warranty</dt>
                                                                                             <dd className="col-7 col-sm-7">{Fun_show_warranty(forecast2)}</dd>
                                                                                             <dt className="col-5 col-sm-5">Memo</dt>
-                                                                                            <dd className="col-7 col-sm-7">{forecast2.ods.Memo}</dd>
+                                                                                            <dd className="col-7 col-sm-7"><input id="Memo" type="text" defaultValue={forecast2.ods.Memo} onChange={(e) => changeData(forecast2.ods, e)} className="form-control" /></dd>
                                                                                             <dt className="col-5 col-sm-5">Customization</dt>
                                                                                             <dd className="col-7 col-sm-7">{forecast2.ods.Memo ? forecast2.ods.Memo : ""}</dd>
                                                                                         </dl>
@@ -244,7 +269,9 @@ export class OrderList extends Component {
                                                                                             <dt className="col-sm-12 description-red text-danger">*&nbsp;Price for reference only. For the real price, refer to P/I.</dt>
                                                                                         </dl>
                                                                                         <dl className="row">
-                                                                                            <button type="button"  onClick={updateClick} className="btn btn-success">Update</button>
+                                                                                            <dd className="col text-center">
+                                                                                                <button type="button" onClick={(e) => updateClick(forecast2, e)} className="btn btn-success">Update</button>
+                                                                                            </dd>
                                                                                         </dl>
                                                                                     </div>
                                                                                 </div>
@@ -286,6 +313,7 @@ export class OrderList extends Component {
     }
 
     render() {
+
         const PageTitle = (props) => {
             return (
                 <div className="row color-Apex  text-center mb-3">
@@ -297,17 +325,17 @@ export class OrderList extends Component {
         };
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : OrderList.renderOrderTable(this.state.forecasts);
+            : OrderList.renderOrderTable(this.state.forecasts, this.state);
         let contents2 = this.state.loading
             ? <p><em>Loading...</em></p>
-            : OrderList.renderOrderTable(this.state.forecasts2);
+            : OrderList.renderOrderTable(this.state.forecasts2, this.state);
         return (
             <main role="main" className="container-fluid">
                 <PageTitle head={<h3>Orders to APEX</h3>} />
                 <div className="row">
                     <div className="col-lg-4 col-lg-offset-4"> <input type="search" id="search" value="" className="form-control" placeholder="Search" /> </div>
                     <div className="col-lg-4 col-lg-offset-4">
-                        <NewOrder  btname="Add New Order" />
+                        <NewOrder btname="Add New Order" />
                     </div>
                 </div>
                 <br />
