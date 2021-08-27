@@ -67,13 +67,29 @@ export class OrderList extends Component {
  
 
         const updateClick = async (data, e) => {
-            let feStr = {};
-            feStr["OrderId"] = data.ods.OrderId;
-            feStr["OrderDetailId"] = data.ods.OrderDetailId;
-            feStr["Qty"] = data.ods.Qty;
-            feStr["Memo"] = data.ods.Memo;
-            feStr["SubTot"] = data.ods.SubTot;
-            
+            let feStrOrder = {};
+            let feStrOrderDetail = {};
+            feStrOrderDetail["OrderId"] = data.ods.OrderId;
+            feStrOrderDetail["OrderDetailId"] = data.ods.OrderDetailId;
+            feStrOrderDetail["Qty"] = data.ods.Qty;
+            feStrOrderDetail["Memo"] = data.ods.Memo;
+            feStrOrderDetail["SubTot"] = data.ods.SubTot;
+
+            let feStr = { Order: feStrOrder, OrderDetail: feStrOrderDetail };
+
+             await fetch(`https://localhost:44363/api/Order/OrderList`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(feStr)
+            })
+                .then(response => {
+                   return response.json();
+                })
+                .then(resaults => {
+                    if (resaults != undefined) {
+                        const aa = "CC";
+                    }
+                });
         };
 
         let get_lub = (fetObj) => {
