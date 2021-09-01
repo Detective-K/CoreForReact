@@ -3,6 +3,7 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
+    Redirect
 } from "react-router-dom";
 import { Layout } from './components/Layout';
 import { OrderList } from './components/OrderList';
@@ -23,11 +24,12 @@ export default class App extends Component {
 
     render() {
         return (
+
             <Router>
                 <Switch>
-                    <Route path="/Login" component={Login} />
+                    <Route exact path="/Login" component={Login} />
                     <Layout>
-                        <Route exact path='/' component={OrderList} />
+                        <Route path='/' component={OrderList} />
                         <Route path='/Counter' component={Counter} />
                         <Route path='/Fetch-data' component={FetchData} />
                     </Layout>

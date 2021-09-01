@@ -132,7 +132,7 @@ export class NewOrder extends React.Component {
                 <button type="button" className="btn btn-success btn-sm" data-toggle="modal" data-target="#modalSignUP">
                     {this.props.btname}
                 </button>
-                <div className="modal fade" id="modalSignUP" tabindex="-1" role="dialog" aria-labelledby="ModalLSignUP" aria-hidden="true">
+                <div className="modal fade" id="modalSignUP"  role="dialog" aria-labelledby="ModalLSignUP" aria-hidden="true">
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -166,8 +166,8 @@ export class NewOrder extends React.Component {
                                         </div>
                                     </div>
                                     <div className="form-group">
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend">
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
                                                 <span className="input-group-text" id="basic-addon1">Currency</span>
                                             </div>
                                             <div className="form-control p-0">
@@ -181,8 +181,8 @@ export class NewOrder extends React.Component {
                                         </div>
                                     </div>
                                     <div className="form-group">
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend">
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
                                                 <span className="input-group-text" id="basic-addon1">Delivery way</span>
                                             </div>
                                             <div className="form-control p-0">
@@ -204,7 +204,7 @@ export class NewOrder extends React.Component {
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text" id="basic-addon1">Delivery date</span>
                                             </div>
-                                            <input type="date" class="form-control" id="deliveryDate" name="deliveryDate" defaultValue={new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().slice(0, -14)} min={new Date().toISOString().slice(0, -14)} />
+                                            <input type="date" className="form-control" id="deliveryDate" name="deliveryDate" defaultValue={new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().slice(0, -14)} min={new Date().toISOString().slice(0, -14)} />
 
                                         </div>
                                     </div>

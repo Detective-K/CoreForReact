@@ -1,5 +1,5 @@
 import { faUserCheck } from '@fortawesome/fontawesome-free-solid';
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import Moment from 'react-moment';
 import { NewOrder } from './NewOrder';
 
@@ -12,7 +12,7 @@ export class OrderList extends Component {
         this.state = { isToggleOn: true };
         require("../css/OrderList.css");
         this.state = {
-            forecasts: [], forecasts2: [], updateDetail: [{ sumTotal: "" }], loading: true
+            forecasts: [], forecasts2: [], temp : "", loading: true
         };
     }
 
@@ -44,18 +44,19 @@ export class OrderList extends Component {
 
         this.setState({ forecasts: data, forecasts2: data2, loading: false });
     }
-    static renderOrderTable(forecasts , state) {
+    static renderOrderTable(forecasts , state , props) {
 
         const SaleInfo = JSON.parse(localStorage.getItem("SaleInfo"));
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         const filterMember = "BAC001";
 
-        const changeData = (data, e) => {
+        const changeData = (data, e , state) => {
             var aa = "cc";
             switch (e.target.id) {
                 case "Qty":
                     data.Qty = e.target.value;
-                    data.SubTot = parseFloat(e.target.value) * parseFloat(data.Price);  
+                    data.SubTot = parseFloat(e.target.value) * parseFloat(data.Price); 
+                    state.temp = "123456";
                     break;
                 case "Memo":
                     data.Memo = e.target.value;
@@ -69,11 +70,8 @@ export class OrderList extends Component {
         const updateClick = async (data, e) => {
             let feStrOrder = {};
             let feStrOrderDetail = {};
-            feStrOrderDetail["OrderId"] = data.ods.OrderId;
-            feStrOrderDetail["OrderDetailId"] = data.ods.OrderDetailId;
-            feStrOrderDetail["Qty"] = data.ods.Qty;
-            feStrOrderDetail["Memo"] = data.ods.Memo;
-            feStrOrderDetail["SubTot"] = data.ods.SubTot;
+            feStrOrder = data.ocs;
+            feStrOrderDetail = data.ods;
 
             let feStr = { Order: feStrOrder, OrderDetail: feStrOrderDetail };
 
@@ -189,12 +187,14 @@ export class OrderList extends Component {
             }
             return temp;
         }
+        var k = 0;
+        var j = 0;
         return (
             <div>
                 {forecasts[0].Data.map((forecast, index) =>
-                    <dl class="row no-gutters">
-                        <dd class="col-sm-12">
-                            <h4><span class="badge badge-secondary"><Moment format="YYYY/MM/DD">{forecast.OrderDate}</Moment> </span></h4>
+                    <dl className="row no-gutters" key={ j++}>
+                        <dd className="col-sm-12">
+                            <h4><span className="badge badge-secondary"><Moment format="YYYY/MM/DD">{forecast.OrderDate}</Moment> </span></h4>
                             <div id="accordion">
                                 <div className="card">
                                     <div className="card-header no-padding-LR no-padding-TB " id={"heading" + index}>
@@ -226,7 +226,7 @@ export class OrderList extends Component {
                                                 <tbody>
                                                     {forecasts[0].Data2.map((forecast2, index2) => {
                                                         if ((forecast2.ocs.OrderId == forecast.OrderId) && forecast2.ods) {
-                                                            return <tr>
+                                                            return <tr key={k++} >
                                                                 <td colSpan="4">
                                                                     <div className="row">
                                                                         <div className="col-12  col-sm-6 col-md-7 col-lg-7 col-xl-7  "> {(forecast2.ods.Spec.indexOf("ÂÂ") >= 0 ? forecast2.ods.Spec.substring(0, forecast2.ods.Spec.indexOf("ÂÂ")) + " / " + forecast2.ods.Mtmaker + " " + forecast2.ods.MotoName : forecast2.ods.Mtmaker != "" ? forecast2.ods.Spec + " / " + forecast2.ods.Mtmaker + " " + forecast2.ods.MotoName : forecast2.ods.Spec)}</div>
@@ -238,11 +238,11 @@ export class OrderList extends Component {
                                                                                 Detail
                                                                                 </button>
                                                                                 &nbsp;&nbsp;&nbsp;
-                                                                                <button type="button" class="btn btn-danger btn-sm">
-                                                                                <i class="fas fa-trash-alt"></i>
+                                                                                <button type="button" className="btn btn-danger btn-sm">
+                                                                                <i className="fas fa-trash-alt"></i>
                                                                             </button>
                                                                         </div>
-                                                                        <div className="modal fade" id={"Modal" + index2} tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                                        <div className="modal fade" id={"Modal" + index2}   role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                                                                             <div className="modal-dialog modal-dialog-centered" role="document">
                                                                                 <div className="modal-content">
                                                                                     <div className="modal-header">
@@ -254,7 +254,7 @@ export class OrderList extends Component {
                                                                                     <div className="modal-body">
                                                                                         <dl className="row">
                                                                                             <dt className="col-5 col-sm-5">{"Quantity"}</dt>
-                                                                                            <dd className="col-7 col-sm-7"><input id="Qty" type="text" defaultValue={forecast2.ods.Qty} onChange={(e) => changeData(forecast2.ods, e)} className="form-control" /></dd>
+                                                                                            <dd className="col-7 col-sm-7"><input id="Qty" type="text" defaultValue={forecast2.ods.Qty} onChange={(e) => changeData(forecast2.ods, e , state)} className="form-control" /></dd>
                                                                                             <dt className="col-5 col-sm-5">Unit Price</dt>
                                                                                             <dd className="col-7 col-sm-7">{CustInfo.length > 0 ? (filterMember.indexOf(CustInfo[0].custId) > 0 ? "****" : forecast2.ods.Price) : forecast2.ods.Price}</dd>
                                                                                             <dt className="col-5 col-sm-5">Part No.</dt>
@@ -263,7 +263,7 @@ export class OrderList extends Component {
                                                                                             <dd className="col-7 col-sm-7">{(CustInfo.length > 0 ? (filterMember.indexOf(CustInfo[0].custId) > 0 ? "****" : forecast2.ods.Discount) : forecast2.ods.Discount) + "%"} </dd>
 
                                                                                             <dt className="col-5 col-sm-5">Total Price</dt>
-                                                                                            <dd className="col-7 col-sm-7">{(CustInfo.length > 0 ? (filterMember.indexOf(CustInfo[0].custId) > 0 ? "****" : forecast2.ods.SubTot) : forecast2.ods.SubTot)}</dd>
+                                                                                            <dd className="col-7 col-sm-7">{state.temp}</dd>
                                                                                             <dt className="col-5 col-sm-5">Currency</dt>
                                                                                             <dd className="col-7 col-sm-7">{forecast2.ocs.Currency}</dd>
 
@@ -302,14 +302,14 @@ export class OrderList extends Component {
                                             </table>
                                             <dl className="row">
                                                 <dd className="col text-center">
-                                                    <div class="btn-group" role="group">
+                                                    <div className="btn-group" role="group">
                                                         <button id="btnGroupDrop1" type="button" className="btn btn btn-success dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             Add Item
                                                                      </button>
-                                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                            <a class="dropdown-item" href="#/Gearbox">Gearbox</a>
-                                                            <a class="dropdown-item" href="#/RackPinion">Rack / Pinion</a>
-                                                            <a class="dropdown-item" href="#/GearboxRackPinion">Gearbox + Rack + Pinion</a>
+                                                        <div className="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                            <a className="dropdown-item" href="#/Gearbox">Gearbox</a>
+                                                            <a className="dropdown-item" href="#/RackPinion">Rack / Pinion</a>
+                                                            <a className="dropdown-item" href="#/GearboxRackPinion">Gearbox + Rack + Pinion</a>
                                                         </div>
                                                     </div>
                                                 </dd>
@@ -341,15 +341,17 @@ export class OrderList extends Component {
         };
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : OrderList.renderOrderTable(this.state.forecasts, this.state);
+    /*             : OrderList.renderOrderTable(this.state.forecasts , this.state , this.props);*/
+            : OrderList.renderOrderTable(this.state.forecasts, this.state, this.props);
         let contents2 = this.state.loading
             ? <p><em>Loading...</em></p>
-            : OrderList.renderOrderTable(this.state.forecasts2, this.state);
+    /*   : OrderList.renderOrderTable(this.state.forecasts2, this.state, this.props);*/
+               : OrderList.renderOrderTable(this.state.forecasts2, this.state, this.props);
         return (
             <main role="main" className="container-fluid">
                 <PageTitle head={<h3>Orders to APEX</h3>} />
                 <div className="row">
-                    <div className="col-lg-4 col-lg-offset-4"> <input type="search" id="search" value="" className="form-control" placeholder="Search" /> </div>
+                    <div className="col-lg-4 col-lg-offset-4"> <input type="search" id="search"  className="form-control" placeholder="Search" /> </div>
                     <div className="col-lg-4 col-lg-offset-4">
                         <NewOrder btname="Add New Order" />
                     </div>
@@ -358,20 +360,20 @@ export class OrderList extends Component {
                 <div className="row">
                     <div className="col-lg-12">
 
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#home">Not Confirmed</a>
+                        <ul className="nav nav-tabs" role="tablist">
+                            <li className="nav-item">
+                                <a className="nav-link active" data-toggle="tab" href="#home">Not Confirmed</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#menu1">In Processing</a>
+                            <li className="nav-item">
+                                <a className="nav-link" data-toggle="tab" href="#menu1">In Processing</a>
                             </li>
 
                         </ul>
-                        <div class="tab-content">
-                            <div id="home" class="container tab-pane active"> <br />
+                        <div className="tab-content">
+                            <div id="home" className="container tab-pane active"> <br />
                                 {contents}
                             </div>
-                            <div id="menu1" class="container tab-pane fade"><br />
+                            <div id="menu1" className="container tab-pane fade"><br />
                                 {contents2}
                             </div>
 

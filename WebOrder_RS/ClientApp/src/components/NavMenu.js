@@ -44,10 +44,10 @@ export class NavMenu extends Component {
                                     <NavLink tag={Link} className="text-dark" to="/">Order</NavLink>
                                 </NavItem>
                                 <NavItem className="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         DesignTool
                         </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                                         <NavLink tag={Link} className="text-dark dropdown-item nav-link" to="/Gearbox">Gearbox</NavLink>
                                         <NavLink tag={Link} className="text-dark dropdown-item nav-link" to="/RackPinion">Rack / Pinion</NavLink>
                                         <NavLink tag={Link} className="text-dark dropdown-item nav-link" to="/GearboxRackPinion">Gearbox + Rack + Pinion</NavLink>
