@@ -18,13 +18,14 @@ export class RenderOrderTable extends React.Component {
         switch (e.target.id) {
             case "Qty":
                 data.ods.Qty = (e.target.value == "") || (e.target.value == "0") ? 1 : e.target.value ;
-                let feStrOrder = {};
-                let feStrOrderDetail = {};
-                feStrOrder = data.ocs;
-                feStrOrderDetail = data.ods;
-                let feStr = JSON.stringify({ Order: feStrOrder, OrderDetail: feStrOrderDetail });
+                let feStr = {};
+                feStr["CustId"] = data.ocs.CustId;
+                feStr["PartNo"] = data.ods.PartNo;
+                feStr["Currency"] = data.ocs.Currency;
+                feStr["Qty"] = data.ods.Qty;
+                feStr = JSON.stringify(feStr);
 
-                await fetch(`https://localhost:44363/api/Order/GetProductPrice?feStr=${feStr}`, {
+                await fetch(`https://localhost:44363/api/Order/ProductPrice?feStr=${feStr}`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" }
                 })
