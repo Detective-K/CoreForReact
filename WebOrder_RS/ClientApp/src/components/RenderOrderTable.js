@@ -34,8 +34,9 @@ export class RenderOrderTable extends React.Component {
                     })
                     .then(resaults => {
                         if (resaults != undefined) {
-                            data.ods.Price = resaults.basePrice;
-                            data.ods.SubTot = parseFloat(data.ods.Qty ) * parseFloat(resaults.basePrice);
+                            data.ods.Price = resaults.finalCharge;
+                            data.ods.SubTot = parseFloat(data.ods.Qty) * parseFloat(resaults.finalCharge);
+                            data.ods.Discount = resaults.discount == 0 ? resaults.discount : parseFloat(resaults.discount) *100  ;
                             this.setState({ temp: "" });
                         }
                     });
