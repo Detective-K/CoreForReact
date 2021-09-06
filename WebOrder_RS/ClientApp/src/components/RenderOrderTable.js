@@ -23,6 +23,10 @@ export class RenderOrderTable extends React.Component {
                 feStr["PartNo"] = data.ods.PartNo;
                 feStr["Currency"] = data.ocs.Currency;
                 feStr["Qty"] = data.ods.Qty;
+                feStr["OrderType"] = data.ods.OrderType;
+                feStr["Spec"] = data.ods.Spec;
+                feStr["AdapterCus"] = data.ods.AdapterCus;
+                feStr["Lubrication"] = data.ods.Lubrication;
                 feStr = JSON.stringify(feStr);
 
                 await fetch(`https://localhost:44363/api/Order/ProductPrice?feStr=${feStr}`, {
