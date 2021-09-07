@@ -1,6 +1,7 @@
 import { faUserCheck } from '@fortawesome/fontawesome-free-solid';
 import React, { Component } from 'react';
 import Moment from 'react-moment';
+import $ from "jquery";
 
 
 export class RenderOrderTable extends React.Component {
@@ -9,7 +10,7 @@ export class RenderOrderTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            forecasts: props.state.forecasts, forecasts2: props.state.forecasts2, temp: ""
+            forecasts: props.state.forecasts, forecasts2: props.state.forecasts2
         };
         this.changeData = this.changeData.bind(this);
     }
@@ -41,12 +42,15 @@ export class RenderOrderTable extends React.Component {
                             data.ods.Price = resaults.finalCharge;
                             data.ods.SubTot = parseFloat(data.ods.Qty) * parseFloat(resaults.finalCharge);
                             data.ods.Discount = resaults.discount == 0 ? resaults.discount : parseFloat(resaults.discount) *100  ;
-                            this.setState({ temp: "" });
+                            this.setState({});
                         }
                     });
                 break;
             case "Memo":
-                data.Memo = e.target.value;
+                data.ods.Memo = e.target.value;
+                break;
+            case "Customization":
+                data.ods.Customize = e.target.value;
                 break;
             default:
         }
@@ -77,7 +81,30 @@ export class RenderOrderTable extends React.Component {
                 })
                 .then(resaults => {
                     if (resaults != undefined) {
-                        const aa = "CC";
+                        alert(resaults.message);
+                        $("DIV[name='Modal']").modal('hide'); 
+                    }
+                });
+        };
+
+        const deleteClick = async (data, e) => {
+            let feStrOrder = {};
+            let feStrOrderDetail = {};
+            feStrOrderDetail = data.ods;
+
+            let feStr = { OrderDetail: feStrOrderDetail };
+
+            await fetch(`https://localhost:44363/api/Order/OrderList`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(feStr)
+            })
+                .then(response => {
+                    return response.json();
+                })
+                .then(resaults => {
+                    if (resaults != undefined) {
+                        alert(resaults.message);
                     }
                 });
         };
@@ -230,11 +257,11 @@ export class RenderOrderTable extends React.Component {
                                                                                 Detail
                                                                                 </button>
                                                                                 &nbsp;&nbsp;&nbsp;
-                                                                                <button type="button" className="btn btn-danger btn-sm">
+                                                                                <button type="button" className="btn btn-danger btn-sm" onClick={(e) => deleteClick(forecast2, e)}>
                                                                                 <i className="fas fa-trash-alt"></i>
                                                                             </button>
                                                                         </div>
-                                                                        <div className="modal fade" id={"Modal" + index2} role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                                        <div className="modal fade" id={"Modal" + index2} Name = "Modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                                                                             <div className="modal-dialog modal-dialog-centered" role="document">
                                                                                 <div className="modal-content">
                                                                                     <div className="modal-header">
@@ -266,7 +293,7 @@ export class RenderOrderTable extends React.Component {
                                                                                             <dt className="col-5 col-sm-5">Memo</dt>
                                                                                             <dd className="col-7 col-sm-7"><input id="Memo" type="text" defaultValue={forecast2.ods.Memo} onChange={(e) => this.changeData(forecast2, e)} className="form-control" /></dd>
                                                                                             <dt className="col-5 col-sm-5">Customization</dt>
-                                                                                            <dd className="col-7 col-sm-7">{forecast2.ods.Memo ? forecast2.ods.Memo : ""}</dd>
+                                                                                            <dd className="col-7 col-sm-7"><input id="Customization" type="text" defaultValue={forecast2.ods.Customize} onChange={(e) => this.changeData(forecast2, e)} className="form-control" /></dd>
                                                                                         </dl>
                                                                                         <dl className="row">
                                                                                             <dt className="col-sm-12 description-red text-danger">(1)&nbsp;Non-standard lubrication.</dt>
