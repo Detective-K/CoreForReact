@@ -2,7 +2,7 @@ import { faUserCheck } from '@fortawesome/fontawesome-free-solid';
 import React, { Component } from 'react';
 import Moment from 'react-moment';
 import $ from "jquery";
-
+import { Link } from 'react-router-dom';
 
 export class RenderOrderTable extends React.Component {
     static displayName = RenderOrderTable.name;
@@ -10,8 +10,7 @@ export class RenderOrderTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            forecasts: props.state.forecasts, forecasts2: props.state.forecasts2
-        };
+            forecasts: props.state };
         this.changeData = this.changeData.bind(this);
     }
 
@@ -105,8 +104,14 @@ export class RenderOrderTable extends React.Component {
                 .then(resaults => {
                     if (resaults != undefined) {
                         alert(resaults.message);
+                        delete data.ods;
+                        this.setState({});
                     }
                 });
+        };
+
+        const addItemClick = (data, e) => {
+            localStorage.setItem("OrderData", JSON.stringify(data));
         };
 
         let get_lub = (fetObj) => {
@@ -261,7 +266,7 @@ export class RenderOrderTable extends React.Component {
                                                                                 <i className="fas fa-trash-alt"></i>
                                                                             </button>
                                                                         </div>
-                                                                        <div className="modal fade" id={"Modal" + index2} Name = "Modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                                        <div className="modal fade" id={"Modal" + index2} name = "Modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                                                                             <div className="modal-dialog modal-dialog-centered" role="document">
                                                                                 <div className="modal-content">
                                                                                     <div className="modal-header">
@@ -326,9 +331,9 @@ export class RenderOrderTable extends React.Component {
                                                             Add Item
                                                                      </button>
                                                         <div className="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                            <a className="dropdown-item" href="#/Gearbox">Gearbox</a>
-                                                            <a className="dropdown-item" href="#/RackPinion">Rack / Pinion</a>
-                                                            <a className="dropdown-item" href="#/GearboxRackPinion">Gearbox + Rack + Pinion</a>
+                                                            <Link className="dropdown-item nav-link" onClick={(e) => addItemClick(forecast, e)} to="/Gearbox">Gearbox</Link>
+                                                            <Link className="dropdown-item nav-link" to="/RackPinion">Rack / Pinion</Link>
+                                                            <Link className="dropdown-item nav-link" to="/GearboxRackPinion">Gearbox + Rack + Pinion</Link>
                                                         </div>
                                                     </div>
                                                 </dd>

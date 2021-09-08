@@ -32,6 +32,9 @@ export class NavMenu extends Component {
     }
 
     render() {
+        const clearOrderData = () => {
+            localStorage.removeItem("OrderData");
+        };
         return (
             <header>
                 <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
@@ -46,9 +49,9 @@ export class NavMenu extends Component {
                                 <NavItem className="nav-item dropdown">
                                     <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         DesignTool
-                        </a>
+                                    </a>
                                     <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <NavLink tag={Link} className="text-dark dropdown-item nav-link" to="/Gearbox">Gearbox</NavLink>
+                                        <NavLink tag={Link} className="text-dark dropdown-item nav-link" to="/Gearbox" onClick={clearOrderData}>Gearbox</NavLink>
                                         <NavLink tag={Link} className="text-dark dropdown-item nav-link" to="/RackPinion">Rack / Pinion</NavLink>
                                         <NavLink tag={Link} className="text-dark dropdown-item nav-link" to="/GearboxRackPinion">Gearbox + Rack + Pinion</NavLink>
                                     </div>
@@ -62,7 +65,7 @@ export class NavMenu extends Component {
                                 </NavItem>
 
                                 <form className="form-inline my-2 my-lg-0">
-                                    <input className="btn btn-outline-success my-2 my-sm-0" onClick={ this.SingOutClick} value="Sing Out" type="submit" />
+                                    <input className="btn btn-outline-success my-2 my-sm-0" onClick={this.SingOutClick} value="Sing Out" type="submit" />
                                 </form>
                             </ul>
 

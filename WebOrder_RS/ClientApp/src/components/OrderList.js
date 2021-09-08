@@ -59,10 +59,10 @@ export class OrderList extends Component {
         };
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : <RenderOrderTable state={ this.state} />;
+            : <RenderOrderTable state={ this.state.forecasts} />;
         let contents2 = this.state.loading
             ? <p><em>Loading...</em></p>
-            : <RenderOrderTable state={this.state} />;
+            : <RenderOrderTable state={this.state.forecasts2} />;
         return (
             <main role="main" className="container-fluid">
                 <PageTitle head={<h3>Orders to APEX</h3>} />

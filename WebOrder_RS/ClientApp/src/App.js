@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { Layout } from './components/Layout';
 import { OrderList } from './components/OrderList';
+import { Gearbox } from './components/Gearbox';
 import { FetchData } from './components/FetchData';
 import { Counter } from './components/Counter';
 import { Login } from './components/Login';
@@ -27,9 +28,10 @@ export default class App extends Component {
 
             <Router>
                 <Switch>
-                    <Route exact path="/Login" component={Login} />
+                    <Route  path="/Login" component={Login} />
                     <Layout>
-                        <Route path='/' component={OrderList} />
+                        <Route exact path='/' component={OrderList} />
+                        <Route path='/Gearbox' component={Gearbox} />
                         <Route path='/Counter' component={Counter} />
                         <Route path='/Fetch-data' component={FetchData} />
                     </Layout>
