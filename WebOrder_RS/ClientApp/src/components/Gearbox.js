@@ -21,27 +21,29 @@ export class Gearbox extends Component {
 
 
     async populateApiData() {
+        const feStr = {};
         const SaleInfo = JSON.parse(localStorage.getItem("SaleInfo"));
-        const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));        
-        const searchValue = SaleInfo[0].salesId != "" ? "Y": "N" ;
+        const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));  
+        feStr["isSale"] = SaleInfo[0].salesId != "" ? "Y" : "N";
+        const searchValue = JSON.stringify(feStr) ;
 
-        const response = await fetch(` https://localhost:44363/api/Order/CustSearchInfo?CustId=${searchValue}`, {
+        const response = await fetch(` https://localhost:44363/api/Order/GearBoxInit?feStr=${searchValue}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
             }
         });
         const data = await response.json();
-        feStr["Ostatus"] = "2";
-        const response2 = await fetch("https://localhost:44363/api/Order/OrderList?feStr=" + JSON.stringify(feStr), {
-            method: 'GET',
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        const data2 = await response2.json();
+        //feStr["Ostatus"] = "2";
+        //const response2 = await fetch("https://localhost:44363/api/Order/OrderList?feStr=" + JSON.stringify(feStr), {
+        //    method: 'GET',
+        //    headers: {
+        //        "Content-Type": "application/json"
+        //    }
+        //});
+        //const data2 = await response2.json();
 
-        this.setState({ forecasts: data, forecasts2: data2, loading: false });
+        this.setState({ mortorData: data.mortorInfo, loading: false });
     }
     static renderOrderTable(forecasts, state) {
 
