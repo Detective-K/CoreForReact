@@ -2,6 +2,7 @@ import { faUserCheck } from '@fortawesome/fontawesome-free-solid';
 import React, { Component } from 'react';
 import { AccordionCt } from './AccordionCt';
 import { NewOrder } from './NewOrder';
+import Select from 'react-select';
 
 export class Gearbox extends Component {
     static displayName = Gearbox.name;
@@ -9,10 +10,10 @@ export class Gearbox extends Component {
     constructor(props) {
         super(props);
         this.state = { isToggleOn: true };
-/*        require("../css/OrderList.css");*/
         this.state = {
-            forecasts: [], forecasts2: [], temp: "", loading: true
+            mortorData: [], modelData: [], isSale: ""
         };
+        this.MortorHandleChange = this.MortorHandleChange.bind(this);
     }
 
     componentDidMount() {
@@ -23,9 +24,10 @@ export class Gearbox extends Component {
     async populateApiData() {
         const feStr = {};
         const SaleInfo = JSON.parse(localStorage.getItem("SaleInfo"));
-        const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));  
+        const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         feStr["isSale"] = SaleInfo[0].salesId != "" ? "Y" : "N";
-        const searchValue = JSON.stringify(feStr) ;
+        feStr["tcOek01"] = "";
+        const searchValue = JSON.stringify(feStr);
 
         const response = await fetch(` https://localhost:44363/api/Order/GearBoxInit?feStr=${searchValue}`, {
             method: 'GET',
@@ -34,19 +36,35 @@ export class Gearbox extends Component {
             }
         });
         const data = await response.json();
-        //feStr["Ostatus"] = "2";
-        //const response2 = await fetch("https://localhost:44363/api/Order/OrderList?feStr=" + JSON.stringify(feStr), {
-        //    method: 'GET',
-        //    headers: {
-        //        "Content-Type": "application/json"
-        //    }
-        //});
-        //const data2 = await response2.json();
+        let mortorOptions = data.mortorInfo.map((item, index) => ({ value: item.tcOek01, label: item.tcOek01 }));
 
-        this.setState({ mortorData: data.mortorInfo, loading: false });
+        this.setState({ mortorData: mortorOptions, isSale: SaleInfo[0].salesId != "" ? "Y" : "N" });
     }
-    static renderOrderTable(forecasts, state) {
 
+    async MortorHandleChange(e) {
+        this.state.mortorData.label = e.label;
+        this.state.mortorData.value = e.value;
+
+        const feStr = {};
+        feStr["isSale"] = this.state.isSale;
+        feStr["tcOek01"] = e.value;
+        const searchValue = JSON.stringify(feStr);
+
+        const response = await fetch(` https://localhost:44363/api/Order/GearBoxInit?feStr=${searchValue}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        let modelOptions = data.modelInfo.map((item, index) => ({ value: item.tcOek02, label: item.tcOek02, interface_flag: item.tcOek27, show_flag: item.tcOek21 }));
+        document.getElementById("modelSel").outerText = "Select...";
+        this.setState({ modelData: modelOptions });
+    }
+
+    ModelHandleChange(e) {
+        this.state.modelData.label = e.label;
+        this.state.modelData.value = e.value;
     }
 
     render() {
@@ -87,61 +105,52 @@ export class Gearbox extends Component {
                                 <div id="collapseOne" className="collapse " aria-labelledby="headingOne" data-parent="#accordion">
                                     <div className="card-body">
 
-                                        <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist">
-                                            <li class="nav-item">
-                                                <a class=" nav-link active " id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Motor<br />Model</a>
+                                        <ul className="nav nav-tabs mb-3" id="pills-tab" role="tablist">
+                                            <li className="nav-item">
+                                                <a className=" nav-link active " id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Motor<br />Model</a>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Motor<br />Dimension</a>
+                                            <li className="nav-item">
+                                                <a className="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Motor<br />Dimension</a>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Adapter<br />Part-No.</a>
+                                            <li className="nav-item">
+                                                <a className="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Adapter<br />Part-No.</a>
                                             </li>
                                         </ul>
-                                        <div class="tab-content" id="pills-tabContent">
-                                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                        <div className="tab-content" id="pills-tabContent">
+                                            <div className="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
                                                 <dl className="row">
                                                     <dt className="col-3">
                                                         <label>Brand</label>
                                                     </dt>
                                                     <dd className="col-9">
-
-                                                        <select name="month" className="form-control form-control-xs">
-                                                            <option value="00"></option>
-                                                            <option value="01">ABB</option>
-                                                            <option value="02">ALLEN BRADLEY</option>
-                                                            <option value="03">ALLEN BRADLEY</option>
-                                                        </select>
+                                                        <Select id="brandSel"
+                                                            options={this.state.mortorData}
+                                                            onChange={(e) => this.MortorHandleChange(e)} />
                                                     </dd>
                                                     <dt className="col-3">
                                                         <label>Model</label>
                                                     </dt>
                                                     <dd className="col-9">
-                                                        <select name="month" className="form-control form-control-xs">
-                                                            <optgroup>
-                                                                <option value="00"></option>
-                                                                <option value="BMP0701F_PCD82+ATV32H037N4,ATV320U04N4"  >BMP0701F_PCD82+ATV32H037N4,ATV320U04N4</option>
-                                                                <option value="8C1.1.30.1.xxxxxx.G.xxB">8C1.1.30.1.xxxxxx.G.xxB</option>
-                                                                <option value="1326AB-A1G-11-xx">1326AB-A1G-11-xx</option>
-                                                            </optgroup>
-                                                        </select>
+                                                        <Select id="modelSel"
+                                                            options={this.state.modelData}
+                                                            onChange={(e) => this.ModelHandleChange(e) } />
                                                     </dd>
                                                 </dl>
                                                 <dl className="row">
                                                     <dd className="col-12">
-                                                        <div class="form-group">
-                                                            <label for="inputKg">
-                                                                <a href="#" data-toggle="modal" data-target="#motorInfoModal" >The max. Moment of Inertia of Application  <i class="fas fa-info-circle fa-lg"></i>
+                                                        <div className="form-group">
+                                                            <label htmlFor="inputKg">
+                                                                <a href="#" data-toggle="modal" data-target="#motorInfoModal" >The max. Moment of Inertia of Application  <i className="fas fa-info-circle fa-lg"></i>
                                                                 </a>
 
-                                                                <div class="modal fade" id="motorInfoModal">
-                                                                    <div class="modal-dialog modal-dialog-centered">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header">
-                                                                                <h4 class="modal-title">Information</h4>
-                                                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                <div className="modal fade" id="motorInfoModal">
+                                                                    <div className="modal-dialog modal-dialog-centered">
+                                                                        <div className="modal-content">
+                                                                            <div className="modal-header">
+                                                                                <h4 className="modal-title">Information</h4>
+                                                                                <button type="button" className="close" data-dismiss="modal">&times;</button>
                                                                             </div>
-                                                                            <div class="modal-body">
+                                                                            <div className="modal-body">
                                                                                 <dl className="row">
                                                                                     <dt className="col-2 text-danger">(*)</dt> <dd className="col-10 text-danger">Without giving the max. moment of inertia of application or giving a wrong value, the warranty could be invalid in case of a gearbox damage due to the back-drive torque from application. </dd>
                                                                                     <dt className="col-2 text-danger">(**)</dt> <dd className="col-10 text-danger">Material of AT series: Stainless<br />Material of ATB series: Carbon Steel with Phosphate<br />Material of AExxxS / AERxxxS series: Full Stainless</dd>
@@ -163,15 +172,15 @@ export class Gearbox extends Component {
                                                 </dl>
 
                                             </div>
-                                            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                            <div className="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                                                 <dl className="row">
                                                     <dt className="col-12 col-xl-6">
-                                                        <div class="input-group mb-3">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text motor-Dimension">Mount Type</span>
+                                                        <div className="input-group mb-3">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text motor-Dimension">Mount Type</span>
                                                             </div>
-                                                            <div class="input-group-prepend">
-                                                                <select class="form-control">
+                                                            <div className="input-group-prepend">
+                                                                <select className="form-control">
                                                                     <option value="N">Flange Mount</option>
                                                                     <option value="Y">Face Mount</option>
                                                                 </select>
@@ -179,12 +188,12 @@ export class Gearbox extends Component {
                                                         </div>
                                                     </dt>
                                                     <dt className="col-12 col-xl-6">
-                                                        <div class="input-group mb-3">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text motor-Dimension">Motor Interface</span>
+                                                        <div className="input-group mb-3">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text motor-Dimension">Motor Interface</span>
                                                             </div>
-                                                            <div class="input-group-prepend">
-                                                                <select class="form-control">
+                                                            <div className="input-group-prepend">
+                                                                <select className="form-control">
                                                                     <option value="N">Square</option>
                                                                     <option value="Y">Round</option>
                                                                 </select>
@@ -193,7 +202,7 @@ export class Gearbox extends Component {
                                                     </dt>
                                                 </dl>
                                                 <dl className="row">
-                                                    <dd class="col-12 text-center">
+                                                    <dd className="col-12 text-center">
                                                         <img src="http://www.apexdyna.com/weborder/image/moto_photo2.png" className="img-thumbnail" />
                                                     </dd>
                                                 </dl>
@@ -213,18 +222,18 @@ export class Gearbox extends Component {
                                                 </dl>
                                                 <dl className="row">
                                                     <dt className="col-6 ">
-                                                        <div class="input-group ">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text">LC</span>
+                                                        <div className="input-group ">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text">LC</span>
                                                             </div>
                                                             <input type="text" className="form-control" />
                                                             <span className="text-danger">*</span>
                                                         </div>
                                                     </dt>
                                                     <dt className="col-6 ">
-                                                        <div class="input-group ">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text">LZ</span>
+                                                        <div className="input-group ">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text">LZ</span>
                                                             </div>
                                                             <input type="text" className="form-control" />
                                                             <span className="text-danger">*</span>
@@ -233,18 +242,18 @@ export class Gearbox extends Component {
                                                 </dl>
                                                 <dl className="row">
                                                     <dt className="col-6">
-                                                        <div class="input-group ">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text">LT</span>
+                                                        <div className="input-group ">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text">LT</span>
                                                             </div>
                                                             <input type="text" className="form-control" />
                                                             <span>&nbsp;&nbsp;</span>
                                                         </div>
                                                     </dt>
                                                     <dt className="col-6 ">
-                                                        <div class="input-group ">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text">LG</span>
+                                                        <div className="input-group ">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text">LG</span>
                                                             </div>
                                                             <input type="text" className="form-control" />
                                                             <span>&nbsp;&nbsp;</span>
@@ -253,18 +262,18 @@ export class Gearbox extends Component {
                                                 </dl>
                                                 <dl className="row">
                                                     <dt className="col-6 ">
-                                                        <div class="input-group ">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text">LB</span>
+                                                        <div className="input-group ">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text">LB</span>
                                                             </div>
                                                             <input type="text" className="form-control" />
                                                             <span className="text-danger">*</span>
                                                         </div>
                                                     </dt>
                                                     <dt className="col-6 ">
-                                                        <div class="input-group ">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text">S &nbsp;</span>
+                                                        <div className="input-group ">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text">S &nbsp;</span>
                                                             </div>
                                                             <input type="text" className="form-control" />
                                                             <span className="text-danger">*</span>
@@ -273,18 +282,18 @@ export class Gearbox extends Component {
                                                 </dl>
                                                 <dl className="row">
                                                     <dt className="col-6 ">
-                                                        <div class="input-group ">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text">LR</span>
+                                                        <div className="input-group ">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text">LR</span>
                                                             </div>
                                                             <input type="text" className="form-control" />
                                                             <span className="text-danger">*</span>
                                                         </div>
                                                     </dt>
                                                     <dt className="col-6 ">
-                                                        <div class="input-group ">
-                                                            <div class="input-group-prepend ">
-                                                                <span class="input-group-text">LE</span>
+                                                        <div className="input-group ">
+                                                            <div className="input-group-prepend ">
+                                                                <span className="input-group-text">LE</span>
                                                             </div>
                                                             <input type="text" className="form-control" />
                                                             <span>&nbsp;&nbsp;</span>
@@ -297,15 +306,15 @@ export class Gearbox extends Component {
                                                     </dt>
                                                 </dl>
                                             </div>
-                                            <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+                                            <div className="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
                                                 <form>
-                                                    <div class="form-group">
-                                                        <label for="inputAdapter">Adapter Part-No.</label>
-                                                        <input type="text" class="form-control" id="inputAdapter" />
+                                                    <div className="form-group">
+                                                        <label htmlFor="inputAdapter">Adapter Part-No.</label>
+                                                        <input type="text" className="form-control" id="inputAdapter" />
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label for="inputMotorShaft">Motor Shaft</label>
-                                                        <input type="text" class="form-control" id="inputMotorShaft" />
+                                                    <div className="form-group">
+                                                        <label htmlFor="inputMotorShaft">Motor Shaft</label>
+                                                        <input type="text" className="form-control" id="inputMotorShaft" />
                                                     </div>
                                                     <div className="row">
                                                         <div className="col-12 text-center">
@@ -340,15 +349,15 @@ export class Gearbox extends Component {
                                         </dl>
                                         <dl className="row">
                                             <dt className="col-12 text-center">
-                                                <div class="btn-toolbar d-inline-block" role="toolbar" aria-label="Toolbar with button groups">
-                                                    <div class="btn-group mr-2 " role="group" aria-label="First group">
-                                                        <button type="button" class="btn btn-success btn-sm active"> &nbsp; Standard &nbsp;  &nbsp;</button>
+                                                <div className="btn-toolbar d-inline-block" role="toolbar" aria-label="Toolbar with button groups">
+                                                    <div className="btn-group mr-2 " role="group" aria-label="First group">
+                                                        <button type="button" className="btn btn-success btn-sm active"> &nbsp; Standard &nbsp;  &nbsp;</button>
                                                     </div>
-                                                    <div class="btn-group mr-2" role="group" aria-label="Second group">
-                                                        <button type="button" class="btn btn-warning btn-sm">Unlimited 1</button>
+                                                    <div className="btn-group mr-2" role="group" aria-label="Second group">
+                                                        <button type="button" className="btn btn-warning btn-sm">Unlimited 1</button>
                                                     </div>
-                                                    <div class="btn-group" role="group" aria-label="Third group">
-                                                        <button type="button" class="btn btn-danger btn-sm">Unlimited 2</button>
+                                                    <div className="btn-group" role="group" aria-label="Third group">
+                                                        <button type="button" className="btn btn-danger btn-sm">Unlimited 2</button>
                                                     </div>
                                                 </div>
                                             </dt>
@@ -356,17 +365,17 @@ export class Gearbox extends Component {
                                         <dl className="row">
                                             <dt className="col-6 col-sm-6 col-md-6">
 
-                                                <a href="#" data-toggle="modal" data-target="#gearboxInfoModal"  > <label className="text-dark">Gearbox</label> <i class="fas fa-info-circle fa-lg"></i>
+                                                <a href="#" data-toggle="modal" data-target="#gearboxInfoModal"  > <label className="text-dark">Gearbox</label> <i className="fas fa-info-circle fa-lg"></i>
                                                 </a>
 
-                                                <div class="modal fade" id="gearboxInfoModal">
-                                                    <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h4 class="modal-title">Information</h4>
-                                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <div className="modal fade" id="gearboxInfoModal">
+                                                    <div className="modal-dialog modal-dialog-centered">
+                                                        <div className="modal-content">
+                                                            <div className="modal-header">
+                                                                <h4 className="modal-title">Information</h4>
+                                                                <button type="button" className="close" data-dismiss="modal">&times;</button>
                                                             </div>
-                                                            <div class="modal-body">
+                                                            <div className="modal-body">
                                                                 <dl className="row">
                                                                     <dd className="col-12 text-danger">XXXXXXXXXXXXXXXX</dd>
                                                                 </dl>
@@ -441,14 +450,14 @@ export class Gearbox extends Component {
 
                                         <dl className="row no-gutters">
 
-                                            <dd class=" col-12 text-center">
+                                            <dd className=" col-12 text-center">
                                                 <img src="http://www.apexdyna.com/images/gearbox/pro_samll01.png" width="191" height="180" />
                                             </dd>
 
-                                            <dt class="col-12 text-center">
-                                                <h5 class="card-title">Ordering Code</h5>
-                                                <h4 class="card-text"><span class="badge badge-primary">AB090 - 003 - S2 - P2 /</span></h4>
-                                                <h4 class="card-text"><span class="badge badge-primary">ABB 8C1.1.30.1.xxxxxx.G.xxB</span></h4>
+                                            <dt className="col-12 text-center">
+                                                <h5 className="card-title">Ordering Code</h5>
+                                                <h4 className="card-text"><span className="badge badge-primary">AB090 - 003 - S2 - P2 /</span></h4>
+                                                <h4 className="card-text"><span className="badge badge-primary">ABB 8C1.1.30.1.xxxxxx.G.xxB</span></h4>
                                             </dt>
 
                                         </dl><br />
@@ -493,7 +502,7 @@ export class Gearbox extends Component {
                                             <dd className="col-12">
                                                 <AccordionCt head={<dt className="col-12"><h5>Motor Specification</h5></dt>} collapse="collapseMS" accordion="accordionMS"
                                                     body={
-                                                        <div className="row">
+                                                        <dl className="row">
                                                             <dt className="col-5" >Brand </dt> <dd className="col-7">ABB</dd>
                                                             <dt className="col-5" >Model </dt> <dd className="col-7">8C1.1.30.1.xxxxxx.G.xxB</dd>
                                                             <dt className="col-5" >Motor Shaft</dt> <dd className="col-7">19 mm</dd>
@@ -503,7 +512,7 @@ export class Gearbox extends Component {
                                                             <dt className="col-5" >Max. Speed</dt> <dd className="col-7">3000 rpm</dd>
                                                             <dt className="col-5" >Peak Torque</dt> <dd className="col-7">4.60 Nm</dd>
                                                             <dt className="col-5" >Inertia</dt> <dd className="col-7">0.90 kgcm<font size="1"><sup>^2</sup></font></dd>
-                                                        </div>
+                                                        </dl>
                                                     } />
                                             </dd>
                                         </dl>
