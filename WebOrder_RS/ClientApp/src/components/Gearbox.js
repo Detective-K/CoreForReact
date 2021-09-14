@@ -3,6 +3,10 @@ import React, { Component } from 'react';
 import { AccordionCt } from './AccordionCt';
 import { NewOrder } from './NewOrder';
 import Select from 'react-select';
+import moto_photo2 from '../Image/moto_photo2.png'
+import moto_photo_YY from '../Image/moto_photo_YY.jpg'
+import moto_photo_YN from '../Image/moto_photo_YN.jpg'
+import moto_photo_NY from '../Image/moto_photo_NY.jpg'
 
 export class Gearbox extends Component {
     static displayName = Gearbox.name;
@@ -10,8 +14,50 @@ export class Gearbox extends Component {
     constructor(props) {
         super(props);
         this.state = { isToggleOn: true };
+        let mountTypeData = [
+            { value: 'N', label: 'Flange Mount' },
+            { value: 'Y', label: 'Face Mount' }
+        ];
+        let motorIFData = [
+            { value: 'N', label: 'Squaret' },
+            { value: 'Y', label: 'Round' }
+        ];
+        let LZData = [
+            { value: 'M3', label: 'M3' },
+            { value: 'M4', label: 'M4' },
+            { value: 'M5', label: 'M5' },
+            { value: 'M6', label: 'M6' },
+            { value: 'M8', label: 'M8' },
+            { value: 'M10', label: 'M10' },
+            { value: 'M12', label: 'M12' },
+            { value: 'M14', label: 'M14' },
+            { value: 'M18', label: 'M18' },
+            { value: 'M20', label: 'M20' },
+            { value: 'M22', label: 'M22' },
+            { value: 'M24', label: 'M24' },
+            { value: 'NO.4-40 UNC', label: 'NO.4-40 UNC' },
+            { value: 'NO.5-40 UNC', label: 'NO.5-40 UNC' },
+            { value: 'NO.6-32 UNC', label: 'NO.6-32 UNC' },
+            { value: 'NO.8-32 UNC', label: 'NO.8-32 UNC' },
+            { value: '10-24 UNC', label: '10-24 UNC' },
+            { value: 'NO.12-24 UNC', label: 'NO.12-24 UNC' },
+            { value: '1/4-20 UNC', label: '1/4-20 UNC' },
+            { value: '5/16-28 UNC', label: '5/16-28 UNC' },
+            { value: '3/8-16 UNC', label: '3/8-16 UNC' },
+            { value: '7/16-14 UNC', label: '7/16-14 UNC' },
+            { value: '1/2-13 UNC', label: '1/2-13 UNC' },
+            { value: '9/16-12 UNC', label: '9/16-12 UNC' },
+            { value: '5/8-11 UNC', label: '5/8-11 UNC' },
+            { value: '3/4-10 UNC', label: '3/4-10 UNC' },
+            { value: '7/8-9 UNC', label: '7/8-9 UNC' }
+        ];
         this.state = {
-            mortorData: [], modelData: [], isSale: ""
+            mortorData: [], modelData: [],
+            gearBoxData:[],
+            mountTypeData: mountTypeData,
+            motorIFData: motorIFData,
+            isSale: "", select: { value: [] },
+            MT: "", MIF: "", LZData: LZData
         };
         this.MortorHandleChange = this.MortorHandleChange.bind(this);
     }
@@ -27,6 +73,7 @@ export class Gearbox extends Component {
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         feStr["isSale"] = SaleInfo[0].salesId != "" ? "Y" : "N";
         feStr["tcOek01"] = "";
+        feStr["custId"] = CustInfo[0].custId;
         const searchValue = JSON.stringify(feStr);
 
         const response = await fetch(` https://localhost:44363/api/Order/GearBoxInit?feStr=${searchValue}`, {
@@ -45,6 +92,7 @@ export class Gearbox extends Component {
         this.state.mortorData.label = e.label;
         this.state.mortorData.value = e.value;
 
+        this.ModelClear();
         const feStr = {};
         feStr["isSale"] = this.state.isSale;
         feStr["tcOek01"] = e.value;
@@ -58,14 +106,42 @@ export class Gearbox extends Component {
         });
         const data = await response.json();
         let modelOptions = data.modelInfo.map((item, index) => ({ value: item.tcOek02, label: item.tcOek02, interface_flag: item.tcOek27, show_flag: item.tcOek21 }));
-        document.getElementById("modelSel").outerText = "Select...";
-        this.setState({ modelData: modelOptions });
+        this.setState({
+            modelData: modelOptions, select: {
+                value: modelOptions[0]
+            }
+        });
     }
 
-    ModelHandleChange(e) {
-        this.state.modelData.label = e.label;
-        this.state.modelData.value = e.value;
+    LZHandleChange(e) {
+        this.state.LZData.label = e.label;
+        this.state.LZData.value = e.value;
     }
+
+    MountHandleChange(e) {
+        this.state.mountTypeData.label = e.label;
+        this.state.mountTypeData.value = e.value;
+        this.setState({ MT: e.value });
+    }
+    MotorIFHandleChange(e) {
+        this.state.motorIFData.label = e.label;
+        this.state.motorIFData.value = e.value;
+        this.setState({ MIF: e.value });
+    }
+
+    ModelHandleChange = value => {
+        this.SetValue(value);
+    };
+    SetValue = value => {
+        this.setState(prevState => ({
+            select: {
+                value
+            }
+        }));
+    };
+    ModelClear = () => {
+        this.SetValue(null);
+    };
 
     render() {
         const PageTitle = (props) => {
@@ -89,6 +165,16 @@ export class Gearbox extends Component {
                 </dl>
             );
         };
+        const { select } = this.state;
+        let motorImgUrl;
+        switch (this.state.MT) {
+            case "Y":
+                motorImgUrl = this.state.MIF == "Y" ? moto_photo_YY : moto_photo_NY;
+                break;
+            default:
+                motorImgUrl = this.state.MIF == "Y" ? moto_photo_YN : moto_photo2;
+                break;
+        }
         return (
             <main role="main" className="container-fluid"> <br />
                 <PageTitle head={<h3>Gearbox + Motor</h3>} />
@@ -132,8 +218,9 @@ export class Gearbox extends Component {
                                                     </dt>
                                                     <dd className="col-9">
                                                         <Select id="modelSel"
+                                                            value={select.value}
                                                             options={this.state.modelData}
-                                                            onChange={(e) => this.ModelHandleChange(e) } />
+                                                            onChange={this.ModelHandleChange} />
                                                     </dd>
                                                 </dl>
                                                 <dl className="row">
@@ -179,11 +266,12 @@ export class Gearbox extends Component {
                                                             <div className="input-group-prepend ">
                                                                 <span className="input-group-text motor-Dimension">Mount Type</span>
                                                             </div>
-                                                            <div className="input-group-prepend">
-                                                                <select className="form-control">
-                                                                    <option value="N">Flange Mount</option>
-                                                                    <option value="Y">Face Mount</option>
-                                                                </select>
+                                                            <div className="form-control p-0">
+                                                                <Select
+                                                                    options={this.state.mountTypeData}
+                                                                    defaultValue={this.state.mountTypeData[0]}
+                                                                    onChange={e => this.MountHandleChange(e)}
+                                                                />
                                                             </div>
                                                         </div>
                                                     </dt>
@@ -192,18 +280,19 @@ export class Gearbox extends Component {
                                                             <div className="input-group-prepend ">
                                                                 <span className="input-group-text motor-Dimension">Motor Interface</span>
                                                             </div>
-                                                            <div className="input-group-prepend">
-                                                                <select className="form-control">
-                                                                    <option value="N">Square</option>
-                                                                    <option value="Y">Round</option>
-                                                                </select>
+                                                            <div className="form-control p-0">
+                                                                <Select
+                                                                    options={this.state.motorIFData}
+                                                                    defaultValue={this.state.motorIFData[0]}
+                                                                    onChange={e => this.MotorIFHandleChange(e)}
+                                                                />
                                                             </div>
                                                         </div>
                                                     </dt>
                                                 </dl>
                                                 <dl className="row">
                                                     <dd className="col-12 text-center">
-                                                        <img src="http://www.apexdyna.com/weborder/image/moto_photo2.png" className="img-thumbnail" />
+                                                        <img src={motorImgUrl} className="img-thumbnail" />
                                                     </dd>
                                                 </dl>
                                                 <dl className="row">
@@ -233,9 +322,16 @@ export class Gearbox extends Component {
                                                     <dt className="col-6 ">
                                                         <div className="input-group ">
                                                             <div className="input-group-prepend ">
-                                                                <span className="input-group-text">LZ</span>
+                                                                <span className="input-group-text">{this.state.MT != "Y" ? 'LZ' : 'LZ1' }</span>
                                                             </div>
-                                                            <input type="text" className="form-control" />
+                                                            {this.state.MT != "Y"
+                                                                ? <input id="txtLZ" type="text" className="form-control" />
+                                                                : <Select className="form-control bg-F0  p-0"
+                                                                    options={this.state.LZData}
+                                                                    defaultValue={this.state.LZData[0]}
+                                                                    onChange={e => this.LZHandleChange(e)}
+                                                                />
+                                                            }
                                                             <span className="text-danger">*</span>
                                                         </div>
                                                     </dt>
@@ -250,15 +346,17 @@ export class Gearbox extends Component {
                                                             <span>&nbsp;&nbsp;</span>
                                                         </div>
                                                     </dt>
-                                                    <dt className="col-6 ">
-                                                        <div className="input-group ">
-                                                            <div className="input-group-prepend ">
-                                                                <span className="input-group-text">LG</span>
+                                                    {this.state.MT != 'Y' &&
+                                                        <dt className="col-6 ">
+                                                            <div className="input-group ">
+                                                                <div className="input-group-prepend ">
+                                                                    <span className="input-group-text">LG</span>
+                                                                </div>
+                                                                <input type="text" className="form-control" />
+                                                                <span>&nbsp;&nbsp;</span>
                                                             </div>
-                                                            <input type="text" className="form-control" />
-                                                            <span>&nbsp;&nbsp;</span>
-                                                        </div>
-                                                    </dt>
+                                                        </dt>
+                                                    }
                                                 </dl>
                                                 <dl className="row">
                                                     <dt className="col-6 ">
