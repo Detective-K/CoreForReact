@@ -53,7 +53,7 @@ export class Gearbox extends Component {
         ];
         this.state = {
             mortorData: [], modelData: [],
-            gearBoxData:[],
+            gearBoxData: [],
             mountTypeData: mountTypeData,
             motorIFData: motorIFData,
             isSale: "", select: { value: [] },
@@ -84,8 +84,9 @@ export class Gearbox extends Component {
         });
         const data = await response.json();
         let mortorOptions = data.mortorInfo.map((item, index) => ({ value: item.tcOek01, label: item.tcOek01 }));
+        let gearBoxOptions = data.gearBoxInfo.map((item, index) => ({ value: item.tcMme01, label: item.tcMme02 }));
 
-        this.setState({ mortorData: mortorOptions, isSale: SaleInfo[0].salesId != "" ? "Y" : "N" });
+        this.setState({ mortorData: mortorOptions, gearBoxData: gearBoxOptions, isSale: SaleInfo[0].salesId != "" ? "Y" : "N" });
     }
 
     async MortorHandleChange(e) {
@@ -93,9 +94,11 @@ export class Gearbox extends Component {
         this.state.mortorData.value = e.value;
 
         this.ModelClear();
+        const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         const feStr = {};
         feStr["isSale"] = this.state.isSale;
         feStr["tcOek01"] = e.value;
+        feStr["custId"] = CustInfo[0].custId;
         const searchValue = JSON.stringify(feStr);
 
         const response = await fetch(` https://localhost:44363/api/Order/GearBoxInit?feStr=${searchValue}`, {
@@ -111,6 +114,11 @@ export class Gearbox extends Component {
                 value: modelOptions[0]
             }
         });
+    }
+
+    GBHandleChange(e) {
+        this.state.gearBoxData.label = e.label;
+        this.state.gearBoxData.value = e.value;
     }
 
     LZHandleChange(e) {
@@ -322,7 +330,7 @@ export class Gearbox extends Component {
                                                     <dt className="col-6 ">
                                                         <div className="input-group ">
                                                             <div className="input-group-prepend ">
-                                                                <span className="input-group-text">{this.state.MT != "Y" ? 'LZ' : 'LZ1' }</span>
+                                                                <span className="input-group-text">{this.state.MT != "Y" ? 'LZ' : 'LZ1'}</span>
                                                             </div>
                                                             {this.state.MT != "Y"
                                                                 ? <input id="txtLZ" type="text" className="form-control" />
@@ -481,11 +489,11 @@ export class Gearbox extends Component {
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <Select className=" form-control-xs p-0"
+                                                    options={this.state.gearBoxData}
+                                                    onChange={e => this.GBHandleChange(e)}
+                                                />
 
-                                                <select name="month" className="form-control form-control-xs" disabled>
-                                                    <option value="R01" selected="selected">AB Series</option>
-                                                    <option value="R02">ABR Series</option>
-                                                </select>
                                             </dt>
                                             <dt className="col-6 col-sm-6 col-md-6">
                                                 <label>Model</label>
