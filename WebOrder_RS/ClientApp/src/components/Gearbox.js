@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { AccordionCt } from './AccordionCt';
 import { NewOrder } from './NewOrder';
 import Select from 'react-select';
+import $ from 'jquery';
 import moto_photo2 from '../Image/moto_photo2.png'
 import moto_photo_YY from '../Image/moto_photo_YY.jpg'
 import moto_photo_YN from '../Image/moto_photo_YN.jpg'
@@ -51,15 +52,19 @@ export class Gearbox extends Component {
             { value: '3/4-10 UNC', label: '3/4-10 UNC' },
             { value: '7/8-9 UNC', label: '7/8-9 UNC' }
         ];
+
+        let tabsIndex = 0;
         this.state = {
             mortorData: [], modelData: [],
             gearBoxData: [],
             mountTypeData: mountTypeData,
             motorIFData: motorIFData,
             isSale: "", select: { value: [] },
-            MT: "", MIF: "", LZData: LZData
+            MT: "", MIF: "", LZData: LZData,
+            tabsIndex: tabsIndex
         };
         this.MortorHandleChange = this.MortorHandleChange.bind(this);
+        this.tabsClick = this.tabsClick.bind(this);
     }
 
     componentDidMount() {
@@ -116,9 +121,30 @@ export class Gearbox extends Component {
         });
     }
 
-    GBHandleChange(e) {
+    async GBHandleChange(e) {
         this.state.gearBoxData.label = e.label;
         this.state.gearBoxData.value = e.value;
+        let feStr = {};
+        feStr["GBSeries"] = e.value;
+        switch (this.state.tabsIndex) {
+            case 1:
+                break;
+            case 2:
+                break;
+            default:
+                feStr["Brand"] = this.state.mortorData.label == undefined ? "" : this.state.mortorData.label;
+                feStr["Spec"] = this.state.select.value.label == undefined ? "" : this.state.select.value.label;
+                feStr["InertiaApp"] = document.getElementById("inputKg").value;
+                break;
+        }
+        const searchValue = JSON.stringify(feStr);
+        const response = await fetch(` https://localhost:44363/api/Order/GearBoxDetail?feStr=${searchValue}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
     }
 
     LZHandleChange(e) {
@@ -151,6 +177,9 @@ export class Gearbox extends Component {
         this.SetValue(null);
     };
 
+    tabsClick = value => {
+        this.setState({ tabsIndex: value });
+    }
     render() {
         const PageTitle = (props) => {
             return (
@@ -201,13 +230,13 @@ export class Gearbox extends Component {
 
                                         <ul className="nav nav-tabs mb-3" id="pills-tab" role="tablist">
                                             <li className="nav-item">
-                                                <a className=" nav-link active " id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Motor<br />Model</a>
+                                                <a className=" nav-link active " id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true" onClick={() => this.tabsClick(0)} >Motor<br />Model</a>
                                             </li>
                                             <li className="nav-item">
-                                                <a className="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Motor<br />Dimension</a>
+                                                <a className="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false" onClick={() => this.tabsClick(1)} >Motor<br />Dimension</a>
                                             </li>
                                             <li className="nav-item">
-                                                <a className="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Adapter<br />Part-No.</a>
+                                                <a className="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false" onClick={() => this.tabsClick(2)}>Adapter<br />Part-No.</a>
                                             </li>
                                         </ul>
                                         <div className="tab-content" id="pills-tabContent">
@@ -259,11 +288,6 @@ export class Gearbox extends Component {
                                                             <small className="form-text  text-danger">To calculate the moment of inertia: <a href="https://www.apexdyna.com/dynamax.aspx" className="text-danger" target="_blank" > GO TO !!</a></small>
                                                         </div>
                                                     </dd>
-                                                </dl>
-                                                <dl className="row">
-                                                    <dt className="col-12 text-center ">
-                                                        <button type="button" className=" btn btn-success btn-sm">&nbsp;&nbsp;&nbsp; Check &nbsp;&nbsp;&nbsp;</button>
-                                                    </dt>
                                                 </dl>
 
                                             </div>
@@ -406,11 +430,6 @@ export class Gearbox extends Component {
                                                         </div>
                                                     </dt>
                                                 </dl>
-                                                <dl className="row">
-                                                    <dt className="col-12 text-center ">
-                                                        <button type="button" className=" btn btn-success btn-sm">&nbsp;&nbsp;&nbsp; Check &nbsp;&nbsp;&nbsp;</button>
-                                                    </dt>
-                                                </dl>
                                             </div>
                                             <div className="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
                                                 <form>
@@ -421,11 +440,6 @@ export class Gearbox extends Component {
                                                     <div className="form-group">
                                                         <label htmlFor="inputMotorShaft">Motor Shaft</label>
                                                         <input type="text" className="form-control" id="inputMotorShaft" />
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-12 text-center">
-                                                            <button type="button" className=" btn btn-success btn-sm">&nbsp;&nbsp;&nbsp; Check &nbsp;&nbsp;&nbsp;</button>
-                                                        </div>
                                                     </div>
                                                 </form>
                                             </div>
