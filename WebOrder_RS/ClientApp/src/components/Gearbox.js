@@ -56,10 +56,11 @@ export class Gearbox extends Component {
         let tabsIndex = 0;
         this.state = {
             mortorData: [], modelData: [],
-            gearBoxData: [],
+            gearBoxData: [], gearBoxModelData: [],
             mountTypeData: mountTypeData,
             motorIFData: motorIFData,
             isSale: "", select: { value: [] },
+            gbModelSelect: { value: [] },
             MT: "", MIF: "", LZData: LZData,
             tabsIndex: tabsIndex
         };
@@ -116,7 +117,7 @@ export class Gearbox extends Component {
         let modelOptions = data.modelInfo.map((item, index) => ({ value: item.tcOek02, label: item.tcOek02, interface_flag: item.tcOek27, show_flag: item.tcOek21 }));
         this.setState({
             modelData: modelOptions, select: {
-                value: modelOptions[0]
+                value: modelOptions.length != 0 ? modelOptions[0] : { value: "", label: "" }
             }
         });
     }
@@ -124,6 +125,7 @@ export class Gearbox extends Component {
     async GBHandleChange(e) {
         this.state.gearBoxData.label = e.label;
         this.state.gearBoxData.value = e.value;
+        this.GBModelClear();
         let feStr = {};
         feStr["GBSeries"] = e.value;
         switch (this.state.tabsIndex) {
@@ -145,8 +147,28 @@ export class Gearbox extends Component {
             }
         });
         const data = await response.json();
-    }
+        let gearBoxModelOptions = data.reducerInfo.map((item, index) => ({ value: item.tcMmd03, label: item.tcMmd03 }));
 
+        this.setState({
+            gearBoxModelData: gearBoxModelOptions,
+            gbModelSelect: {
+                value: gearBoxModelOptions[0]
+            }
+        });
+    }
+    GBModelHandleChange = value => {
+        this.GBModelSetValue(value);
+    };
+    GBModelSetValue = value => {
+        this.setState(prevState => ({
+            gbModelSelect: {
+                value
+            }
+        }));
+    };
+    GBModelClear = () => {
+        this.GBModelSetValue(null);
+    };
     LZHandleChange(e) {
         this.state.LZData.label = e.label;
         this.state.LZData.value = e.value;
@@ -203,6 +225,7 @@ export class Gearbox extends Component {
             );
         };
         const { select } = this.state;
+        const { gbModelSelect } = this.state;
         let motorImgUrl;
         switch (this.state.MT) {
             case "Y":
@@ -511,10 +534,11 @@ export class Gearbox extends Component {
                                             </dt>
                                             <dt className="col-6 col-sm-6 col-md-6">
                                                 <label>Model</label>
-                                                <select name="month" className="form-control form-control-xs" disabled>
-                                                    <option selected="selected" value="AB090">AB090</option>
-                                                    <option value="AB090A">AB090A</option>
-                                                </select>
+                                                <Select className=" form-control-xs p-0"
+                                                    value={gbModelSelect.value}
+                                                    options={this.state.gearBoxModelData}
+                                                    onChange={this.GBModelHandleChange}
+                                                />
                                             </dt>
                                         </dl>
                                         <dl className="row">
