@@ -57,10 +57,13 @@ export class Gearbox extends Component {
         this.state = {
             mortorData: [], modelData: [],
             gearBoxData: [], gearBoxModelData: [],
+            ratioData: [],
             mountTypeData: mountTypeData,
             motorIFData: motorIFData,
             isSale: "", select: { value: [] },
+            gbSelect: { value: [] },
             gbModelSelect: { value: [] },
+            ratioSelect: { value: [] },
             MT: "", MIF: "", LZData: LZData,
             tabsIndex: tabsIndex
         };
@@ -92,7 +95,13 @@ export class Gearbox extends Component {
         let mortorOptions = data.mortorInfo.map((item, index) => ({ value: item.tcOek01, label: item.tcOek01 }));
         let gearBoxOptions = data.gearBoxInfo.map((item, index) => ({ value: item.tcMme01, label: item.tcMme02 }));
 
-        this.setState({ mortorData: mortorOptions, gearBoxData: gearBoxOptions, isSale: SaleInfo[0].salesId != "" ? "Y" : "N" });
+        this.setState({
+            mortorData: mortorOptions, gearBoxData: gearBoxOptions
+            , gbSelect: {
+                value: gearBoxOptions.length != 0 ? gearBoxOptions[0] : { value: "", label: "" }
+            }
+            , isSale: SaleInfo[0].salesId != "" ? "Y" : "N"
+        });
     }
 
     async MortorHandleChange(e) {
@@ -100,6 +109,8 @@ export class Gearbox extends Component {
         this.state.mortorData.value = e.value;
 
         this.ModelClear();
+        this.GBModelClear();
+        this.RatioClear();
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         const feStr = {};
         feStr["isSale"] = this.state.isSale;
@@ -115,19 +126,24 @@ export class Gearbox extends Component {
         });
         const data = await response.json();
         let modelOptions = data.modelInfo.map((item, index) => ({ value: item.tcOek02, label: item.tcOek02, interface_flag: item.tcOek27, show_flag: item.tcOek21 }));
+        let gearBoxOptions = data.gearBoxInfo.map((item, index) => ({ value: item.tcMme01, label: item.tcMme02 }));
         this.setState({
-            modelData: modelOptions, select: {
+            modelData: modelOptions, gearBoxData: gearBoxOptions, select: {
                 value: modelOptions.length != 0 ? modelOptions[0] : { value: "", label: "" }
+            }
+            , gbSelect: {
+                value:  { value: "", label: "" }
             }
         });
     }
 
-    async GBHandleChange(e) {
-        this.state.gearBoxData.label = e.label;
-        this.state.gearBoxData.value = e.value;
+    GBHandleChange = async e => {
+        this.GBSetValue(e);
         this.GBModelClear();
+        this.RatioClear();
         let feStr = {};
         feStr["GBSeries"] = e.value;
+        feStr["GBModel"] = "";
         switch (this.state.tabsIndex) {
             case 1:
                 break;
@@ -136,7 +152,7 @@ export class Gearbox extends Component {
             default:
                 feStr["Brand"] = this.state.mortorData.label == undefined ? "" : this.state.mortorData.label;
                 feStr["Spec"] = this.state.select.value.label == undefined ? "" : this.state.select.value.label;
-                feStr["InertiaApp"] = document.getElementById("inputKg").value;
+                feStr["InertiaApp"] = !isNaN(document.getElementById("inputKg").value) ? document.getElementById("inputKg").value : "";
                 break;
         }
         const searchValue = JSON.stringify(feStr);
@@ -148,16 +164,68 @@ export class Gearbox extends Component {
         });
         const data = await response.json();
         let gearBoxModelOptions = data.reducerInfo.map((item, index) => ({ value: item.tcMmd03, label: item.tcMmd03 }));
+        let ratioOptions = data.ratioInfo.map((item, index) => ({ value: item.tcMmd04, label: item.tcMmd04 }));
 
         this.setState({
             gearBoxModelData: gearBoxModelOptions,
             gbModelSelect: {
-                value: gearBoxModelOptions[0]
+                value: gearBoxModelOptions.length != 0 ? gearBoxModelOptions[0] : { value: "", label: "" }
+            },
+            ratioData: ratioOptions,
+            ratioSelect: {
+                value: ratioOptions.length != 0 ? ratioOptions[0] : { value: "", label: "" }
             }
         });
     }
-    GBModelHandleChange = value => {
-        this.GBModelSetValue(value);
+    GBSetValue = value => {
+        this.setState(prevState => ({
+            gbSelect: {
+                value
+            }
+        }));
+    };
+    GBClear = () => {
+        this.GBSetValue(null);
+        this.setState({
+            gearBoxData: [],
+            gbSelect: {
+                value: { value: "", label: "" }
+            }
+        });
+    };
+    GBModelHandleChange = async e => {
+        this.GBModelSetValue(e);
+        this.RatioClear();
+        let feStr = {}
+        feStr["GBSeries"] = this.state.gbSelect.value.value;
+        feStr["GBModel"] = e.value;
+        switch (this.state.tabsIndex) {
+            case 1:
+                break;
+            case 2:
+                break;
+            default:
+                feStr["Brand"] = this.state.mortorData.label == undefined ? "" : this.state.mortorData.label;
+                feStr["Spec"] = this.state.select.value.label == undefined ? "" : this.state.select.value.label;
+                feStr["InertiaApp"] = !isNaN(document.getElementById("inputKg").value) ? document.getElementById("inputKg").value : "";
+                break;
+        }
+        const searchValue = JSON.stringify(feStr);
+        const response = await fetch(` https://localhost:44363/api/Order/GearBoxDetail?feStr=${searchValue}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        let ratioOptions = data.ratioInfo.map((item, index) => ({ value: item.tcMmd04, label: item.tcMmd04 }));
+
+        this.setState({
+            ratioData: ratioOptions,
+            ratioSelect: {
+                value: ratioOptions.length != 0 ? ratioOptions[0] : { value: "", label: "" }
+            }
+        });
     };
     GBModelSetValue = value => {
         this.setState(prevState => ({
@@ -168,6 +236,31 @@ export class Gearbox extends Component {
     };
     GBModelClear = () => {
         this.GBModelSetValue(null);
+        this.setState({
+            gearBoxModelData: [],
+            gbModelSelect: {
+                value: { value: "", label: "" }
+            }
+        });
+    };
+    RatioHandleChange = value => {
+        this.RatioSetValue(value);
+    };
+    RatioSetValue = value => {
+        this.setState(prevState => ({
+            ratioSelect: {
+                value
+            }
+        }));
+    };
+    RatioClear = () => {
+        this.RatioSetValue(null);
+        this.setState({
+            ratioData: [],
+            ratioSelect: {
+                value: { value: "", label: "" }
+            }
+        });
     };
     LZHandleChange(e) {
         this.state.LZData.label = e.label;
@@ -226,6 +319,8 @@ export class Gearbox extends Component {
         };
         const { select } = this.state;
         const { gbModelSelect } = this.state;
+        const { gbSelect } = this.state;
+        const { ratioSelect } = this.state;
         let motorImgUrl;
         switch (this.state.MT) {
             case "Y":
@@ -527,8 +622,9 @@ export class Gearbox extends Component {
                                                     </div>
                                                 </div>
                                                 <Select className=" form-control-xs p-0"
+                                                    value={gbSelect.value}
                                                     options={this.state.gearBoxData}
-                                                    onChange={e => this.GBHandleChange(e)}
+                                                    onChange={this.GBHandleChange}
                                                 />
 
                                             </dt>
@@ -544,10 +640,11 @@ export class Gearbox extends Component {
                                         <dl className="row">
                                             <dt className="col-6 col-sm-6 col-md-6">
                                                 <label>Ratio</label>
-                                                <select name="month" className="form-control form-control-xs" disabled>
-                                                    <option selected="selected" value="3">3</option>
-                                                    <option value="4">4</option>
-                                                </select>
+                                                <Select className=" form-control-xs p-0"
+                                                    value={ratioSelect.value}
+                                                    options={this.state.ratioData}
+                                                    onChange={this.RatioHandleChange}
+                                                />
                                             </dt>
                                             <dt className="col-6 col-sm-6 col-md-6">
                                                 <label>Shaft Option</label>
