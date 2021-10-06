@@ -141,9 +141,12 @@ export class Gearbox extends Component {
         this.GBSetValue(e);
         this.GBModelClear();
         this.RatioClear();
+        const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         let feStr = {};
         feStr["GBSeries"] = e.value;
         feStr["GBModel"] = "";
+        feStr["isSale"] = this.state.isSale;
+        feStr["custId"] = CustInfo[0].custId;
         switch (this.state.tabsIndex) {
             case 1:
                 break;
@@ -196,9 +199,12 @@ export class Gearbox extends Component {
     GBModelHandleChange = async e => {
         this.GBModelSetValue(e);
         this.RatioClear();
+        const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         let feStr = {}
         feStr["GBSeries"] = this.state.gbSelect.value.value;
         feStr["GBModel"] = e.value;
+        feStr["isSale"] = this.state.isSale;
+        feStr["custId"] = CustInfo[0].custId;
         switch (this.state.tabsIndex) {
             case 1:
                 break;
