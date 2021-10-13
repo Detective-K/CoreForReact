@@ -57,13 +57,16 @@ export class Gearbox extends Component {
         this.state = {
             mortorData: [], modelData: [],
             gearBoxData: [], gearBoxModelData: [],
-            ratioData: [],
+            ratioData: [], shaftData: [], 
+            backlashData : [],
             mountTypeData: mountTypeData,
             motorIFData: motorIFData,
             isSale: "", select: { value: [] },
             gbSelect: { value: [] },
             gbModelSelect: { value: [] },
             ratioSelect: { value: [] },
+            shaftSelect: { value: [] },
+            backlashSelect: { value: [] },
             MT: "", MIF: "", LZData: LZData,
             tabsIndex: tabsIndex
         };
@@ -141,10 +144,14 @@ export class Gearbox extends Component {
         this.GBSetValue(e);
         this.GBModelClear();
         this.RatioClear();
+        this.ShaftClear();
+        this.BacklashClear();
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         let feStr = {};
-        feStr["GBSeries"] = e.value;
+        feStr["GBSeries"] = e.value; 
         feStr["GBModel"] = "";
+        feStr["Range"] = "0";
+        feStr["Ratio"] = "";
         feStr["isSale"] = this.state.isSale;
         feStr["custId"] = CustInfo[0].custId;
         switch (this.state.tabsIndex) {
@@ -168,6 +175,8 @@ export class Gearbox extends Component {
         const data = await response.json();
         let gearBoxModelOptions = data.reducerInfo.map((item, index) => ({ value: item.tcMmd03, label: item.tcMmd03 }));
         let ratioOptions = data.ratioInfo.map((item, index) => ({ value: item.tcMmd04, label: item.tcMmd04 }));
+        let shaftOptions = data.backlashShaft.map((item, index) => ({ value: item.tcMmd22, label: item.tcMmd22 }));
+        let backlashOptions = data.backlashShaft.map((item, index) => ({ value: item.tcMmd23, label: item.tcMmd23 }));
 
         this.setState({
             gearBoxModelData: gearBoxModelOptions,
@@ -177,6 +186,14 @@ export class Gearbox extends Component {
             ratioData: ratioOptions,
             ratioSelect: {
                 value: ratioOptions.length != 0 ? ratioOptions[0] : { value: "", label: "" }
+            },
+            shaftData: shaftOptions,
+            shaftSelect: {
+                value: shaftOptions.length != 0 ? shaftOptions[0] : { value: "", label: "" }
+            },
+            backlashData: backlashOptions,
+            backlashSelect: {
+                value: backlashOptions.length != 0 ? backlashOptions[0] : { value: "", label: "" }
             }
         });
     }
@@ -199,10 +216,14 @@ export class Gearbox extends Component {
     GBModelHandleChange = async e => {
         this.GBModelSetValue(e);
         this.RatioClear();
+        this.ShaftClear();
+        this.BacklashClear();
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         let feStr = {}
         feStr["GBSeries"] = this.state.gbSelect.value.value;
         feStr["GBModel"] = e.value;
+        feStr["Range"] = "0";
+        feStr["Ratio"] = "";
         feStr["isSale"] = this.state.isSale;
         feStr["custId"] = CustInfo[0].custId;
         switch (this.state.tabsIndex) {
@@ -225,11 +246,21 @@ export class Gearbox extends Component {
         });
         const data = await response.json();
         let ratioOptions = data.ratioInfo.map((item, index) => ({ value: item.tcMmd04, label: item.tcMmd04 }));
+        let shaftOptions = data.backlashShaft.map((item, index) => ({ value: item.tcMmd22, label: item.tcMmd22 }));
+        let backlashOptions = data.backlashShaft.map((item, index) => ({ value: item.tcMmd23, label: item.tcMmd23 }));
 
         this.setState({
             ratioData: ratioOptions,
             ratioSelect: {
                 value: ratioOptions.length != 0 ? ratioOptions[0] : { value: "", label: "" }
+            },
+            shaftData: shaftOptions,
+            shaftSelect: {
+                value: shaftOptions.length != 0 ? shaftOptions[0] : { value: "", label: "" }
+            },
+            backlashData: backlashOptions,
+            backlashSelect: {
+                value: backlashOptions.length != 0 ? backlashOptions[0] : { value: "", label: "" }
             }
         });
     };
@@ -264,6 +295,44 @@ export class Gearbox extends Component {
         this.setState({
             ratioData: [],
             ratioSelect: {
+                value: { value: "", label: "" }
+            }
+        });
+    };
+    ShaftHandleChange = value => {
+        this.ShaftSetValue(value);
+    };
+    ShaftSetValue = value => {
+        this.setState(prevState => ({
+            shaftSelect: {
+                value
+            }
+        }));
+    };
+    ShaftClear = () => {
+        this.ShaftSetValue(null);
+        this.setState({
+            shaftData: [],
+            shaftSelect: {
+                value: { value: "", label: "" }
+            }
+        });
+    };
+    BacklashHandleChange = value => {
+        this.BacklashSetValue(value);
+    };
+    BacklashSetValue = value => {
+        this.setState(prevState => ({
+            backlashSelect: {
+                value
+            }
+        }));
+    };
+    BacklashClear = () => {
+        this.BacklashSetValue(null);
+        this.setState({
+            backlashData: [],
+            backlashSelect: {
                 value: { value: "", label: "" }
             }
         });
@@ -327,6 +396,8 @@ export class Gearbox extends Component {
         const { gbModelSelect } = this.state;
         const { gbSelect } = this.state;
         const { ratioSelect } = this.state;
+        const { shaftSelect } = this.state;
+        const { backlashSelect } = this.state;
         let motorImgUrl;
         switch (this.state.MT) {
             case "Y":
@@ -654,19 +725,21 @@ export class Gearbox extends Component {
                                             </dt>
                                             <dt className="col-6 col-sm-6 col-md-6">
                                                 <label>Shaft Option</label>
-                                                <select name="month" className="form-control form-control-xs" disabled>
-                                                    <option selected="selected" value="S2">S2</option>
-                                                    <option value="S3">S3</option>
-                                                </select>
+                                                <Select className=" form-control-xs p-0"
+                                                    value={shaftSelect.value}
+                                                    options={this.state.shaftData}
+                                                    onChange={this.ShaftHandleChange}
+                                                />
                                             </dt>
                                         </dl>
                                         <dl className="row">
                                             <dt className="col-6 col-sm-6 col-md-6">
                                                 <label>Backlash</label>
-                                                <select name="month" className="form-control form-control-xs" disabled>
-                                                    <option value="P0">P0</option>
-                                                    <option value="P1">P1</option>
-                                                </select>
+                                                <Select className=" form-control-xs p-0"
+                                                    value={backlashSelect.value}
+                                                    options={this.state.backlashData}
+                                                    onChange={this.BacklashHandleChange}
+                                                />
                                             </dt>
                                         </dl><br />
                                         <dl className="row">
