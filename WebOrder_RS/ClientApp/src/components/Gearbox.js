@@ -57,8 +57,8 @@ export class Gearbox extends Component {
         this.state = {
             mortorData: [], modelData: [],
             gearBoxData: [], gearBoxModelData: [],
-            ratioData: [], shaftData: [], 
-            backlashData : [],
+            ratioData: [], shaftData: [],
+            backlashData: [],
             mountTypeData: mountTypeData,
             motorIFData: motorIFData,
             isSale: "", select: { value: [] },
@@ -68,10 +68,12 @@ export class Gearbox extends Component {
             shaftSelect: { value: [] },
             backlashSelect: { value: [] },
             MT: "", MIF: "", LZData: LZData,
+            range: 0,
             tabsIndex: tabsIndex
         };
         this.MortorHandleChange = this.MortorHandleChange.bind(this);
         this.tabsClick = this.tabsClick.bind(this);
+        this.RangeClick = this.RangeClick.bind(this);
     }
 
     componentDidMount() {
@@ -114,6 +116,8 @@ export class Gearbox extends Component {
         this.ModelClear();
         this.GBModelClear();
         this.RatioClear();
+        this.ShaftClear();
+        this.BacklashClear();
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         const feStr = {};
         feStr["isSale"] = this.state.isSale;
@@ -135,7 +139,7 @@ export class Gearbox extends Component {
                 value: modelOptions.length != 0 ? modelOptions[0] : { value: "", label: "" }
             }
             , gbSelect: {
-                value:  { value: "", label: "" }
+                value: { value: "", label: "" }
             }
         });
     }
@@ -148,9 +152,9 @@ export class Gearbox extends Component {
         this.BacklashClear();
         const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
         let feStr = {};
-        feStr["GBSeries"] = e.value; 
+        feStr["GBSeries"] = e.value;
         feStr["GBModel"] = "";
-        feStr["Range"] = "0";
+        feStr["Range"] = this.state.range;
         feStr["Ratio"] = "";
         feStr["isSale"] = this.state.isSale;
         feStr["custId"] = CustInfo[0].custId;
@@ -175,8 +179,8 @@ export class Gearbox extends Component {
         const data = await response.json();
         let gearBoxModelOptions = data.reducerInfo.map((item, index) => ({ value: item.tcMmd03, label: item.tcMmd03 }));
         let ratioOptions = data.ratioInfo.map((item, index) => ({ value: item.tcMmd04, label: item.tcMmd04 }));
-        let shaftOptions = data.backlashShaft.map((item, index) => ({ value: item.tcMmd22, label: item.tcMmd22 }));
-        let backlashOptions = data.backlashShaft.map((item, index) => ({ value: item.tcMmd23, label: item.tcMmd23 }));
+        let shaftOptions = this.PublicOptions({ "name": "shaft", "item": data.backlashShaft.length == 0 ? "" : data.backlashShaft[0].tcMmd22 });
+        let backlashOptions = this.PublicOptions({ "name": "backlash", "item": data.backlashShaft.length == 0 ? "" : data.backlashShaft[0].tcMmd23 });
 
         this.setState({
             gearBoxModelData: gearBoxModelOptions,
@@ -222,7 +226,7 @@ export class Gearbox extends Component {
         let feStr = {}
         feStr["GBSeries"] = this.state.gbSelect.value.value;
         feStr["GBModel"] = e.value;
-        feStr["Range"] = "0";
+        feStr["Range"] = this.state.range;;
         feStr["Ratio"] = "";
         feStr["isSale"] = this.state.isSale;
         feStr["custId"] = CustInfo[0].custId;
@@ -246,8 +250,8 @@ export class Gearbox extends Component {
         });
         const data = await response.json();
         let ratioOptions = data.ratioInfo.map((item, index) => ({ value: item.tcMmd04, label: item.tcMmd04 }));
-        let shaftOptions = data.backlashShaft.map((item, index) => ({ value: item.tcMmd22, label: item.tcMmd22 }));
-        let backlashOptions = data.backlashShaft.map((item, index) => ({ value: item.tcMmd23, label: item.tcMmd23 }));
+        let shaftOptions = this.PublicOptions({ "name": "shaft", "item": data.backlashShaft.length == 0 ? "" :data.backlashShaft[0].tcMmd22 });
+        let backlashOptions = this.PublicOptions({ "name": "backlash", "item": data.backlashShaft.length == 0 ? "" : data.backlashShaft[0].tcMmd23 });
 
         this.setState({
             ratioData: ratioOptions,
@@ -280,8 +284,51 @@ export class Gearbox extends Component {
             }
         });
     };
-    RatioHandleChange = value => {
-        this.RatioSetValue(value);
+    RatioHandleChange = async e =>
+    {
+        this.RatioSetValue(e);
+        this.ShaftClear();
+        this.BacklashClear();
+        const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
+        let feStr = {}
+        feStr["GBSeries"] = this.state.gbSelect.value.value;
+        feStr["GBModel"] = this.state.gbModelSelect.value.value;
+        feStr["Range"] = this.state.range;;
+        feStr["Ratio"] = e.value;
+        feStr["isSale"] = this.state.isSale;
+        feStr["custId"] = CustInfo[0].custId;
+        switch (this.state.tabsIndex) {
+            case 1:
+                break;
+            case 2:
+                break;
+            default:
+                feStr["Brand"] = this.state.mortorData.label == undefined ? "" : this.state.mortorData.label;
+                feStr["Spec"] = this.state.select.value.label == undefined ? "" : this.state.select.value.label;
+                feStr["InertiaApp"] = !isNaN(document.getElementById("inputKg").value) ? document.getElementById("inputKg").value : "";
+                break;
+        }
+        const searchValue = JSON.stringify(feStr);
+        const response = await fetch(` https://localhost:44363/api/Order/GearBoxDetail?feStr=${searchValue}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        let shaftOptions = this.PublicOptions({ "name": "shaft", "item": data.backlashShaft.length == 0 ? "" : data.backlashShaft[0].tcMmd22 });
+        let backlashOptions = this.PublicOptions({ "name": "backlash", "item": data.backlashShaft.length == 0 ? "" : data.backlashShaft[0].tcMmd23 });
+
+        this.setState({
+            shaftData: shaftOptions,
+            shaftSelect: {
+                value: shaftOptions.length != 0 ? shaftOptions[0] : { value: "", label: "" }
+            },
+            backlashData: backlashOptions,
+            backlashSelect: {
+                value: backlashOptions.length != 0 ? backlashOptions[0] : { value: "", label: "" }
+            }
+        });
     };
     RatioSetValue = value => {
         this.setState(prevState => ({
@@ -369,6 +416,51 @@ export class Gearbox extends Component {
 
     tabsClick = value => {
         this.setState({ tabsIndex: value });
+    };
+    RangeClick = value => {
+        this.setState({ range: value });
+        this.GBModelClear();
+        this.RatioClear();
+        this.ShaftClear();
+        this.BacklashClear();
+    }
+    PublicOptions = (e) => {
+        let Options = [];
+        switch (e.name) {
+            case "shaft":
+                if (e.item == "1") {
+                    Options = [
+                        { value: "S1", label: "S1" },
+                        { value: "S2", label: "S2" }
+                    ]
+                }
+                else if (e.item == "2") {
+                    Options = [
+                        { value: "S1", label: "S1" },
+                        { value: "S2", label: "S2" },
+                        { value: "S3", label: "S3" }
+                    ]
+                }
+                else if (e.item == "3") {
+                    Options = [
+                        { value: "S1", label: "S1" },
+                        { value: "S2", label: "S2" },
+                        { value: "S3", label: "S3" },
+                        { value: "S4", label: "S4" }
+                    ]
+                }
+                break;
+            case "backlash":
+                if (e.item == "1") {
+                    Options = [
+                        { value: "P0", label: "P0" },
+                        { value: "P1", label: "P1" },
+                        { value: "P2", label: "P2" }
+                    ]
+                }
+                break;
+        };
+        return Options;
     }
     render() {
         const PageTitle = (props) => {
@@ -666,13 +758,13 @@ export class Gearbox extends Component {
                                             <dt className="col-12 text-center">
                                                 <div className="btn-toolbar d-inline-block" role="toolbar" aria-label="Toolbar with button groups">
                                                     <div className="btn-group mr-2 " role="group" aria-label="First group">
-                                                        <button type="button" className="btn btn-success btn-sm active"> &nbsp; Standard &nbsp;  &nbsp;</button>
+                                                        <button type="button" className="btn btn-success btn-sm active" onClick={() => this.RangeClick(0)}> &nbsp; Standard &nbsp;  &nbsp;</button>
                                                     </div>
                                                     <div className="btn-group mr-2" role="group" aria-label="Second group">
-                                                        <button type="button" className="btn btn-warning btn-sm">Unlimited 1</button>
+                                                        <button type="button" className="btn btn-warning btn-sm" onClick={() => this.RangeClick(1)}>Unlimited 1</button>
                                                     </div>
                                                     <div className="btn-group" role="group" aria-label="Third group">
-                                                        <button type="button" className="btn btn-danger btn-sm">Unlimited 2</button>
+                                                        <button type="button" className="btn btn-danger btn-sm" onClick={() => this.RangeClick(2)}>Unlimited 2</button>
                                                     </div>
                                                 </div>
                                             </dt>
