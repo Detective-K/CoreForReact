@@ -74,6 +74,7 @@ export class Gearbox extends Component {
         this.MortorHandleChange = this.MortorHandleChange.bind(this);
         this.tabsClick = this.tabsClick.bind(this);
         this.RangeClick = this.RangeClick.bind(this);
+        this.ResultSearchClick = this.ResultSearchClick.bind(this);
     }
 
     componentDidMount() {
@@ -424,6 +425,18 @@ export class Gearbox extends Component {
         this.ShaftClear();
         this.BacklashClear();
     }
+
+    ResultSearchClick = () =>
+    {
+        let festr = {};
+        festr["Motor"] = { "Brand": this.state.mortorData.label, "Spec": this.state.select.value.label };
+        festr["GearBox"] = {
+            "GBSeries": this.state.gbSelect.value.value, "GBModel": this.state.gbModelSelect.value.value,
+            "Ratio": this.state.ratioSelect.value.value, "Shaft": this.state.shaftSelect.value.value,
+            "Backlash": this.state.backlashSelect.value.value
+        };
+    }
+
     PublicOptions = (e) => {
         let Options = [];
         switch (e.name) {
@@ -836,7 +849,7 @@ export class Gearbox extends Component {
                                         </dl><br />
                                         <dl className="row">
                                             <dt className="col-12 text-center" >
-                                                <button type="button" className=" btn btn-success btn-sm">&nbsp;&nbsp;&nbsp; Check &nbsp;&nbsp;&nbsp;</button>
+                                                <button type="button" className=" btn btn-success btn-sm" onClick={this.ResultSearchClick }>&nbsp;&nbsp;&nbsp; Check &nbsp;&nbsp;&nbsp;</button>
                                             </dt>
                                         </dl>
                                     </div>
