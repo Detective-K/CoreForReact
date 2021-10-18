@@ -426,15 +426,25 @@ export class Gearbox extends Component {
         this.BacklashClear();
     }
 
-    ResultSearchClick = () =>
+    ResultSearchClick = async () =>
     {
-        let festr = {};
-        festr["Motor"] = { "Brand": this.state.mortorData.label, "Spec": this.state.select.value.label };
-        festr["GearBox"] = {
+        const CustInfo = JSON.parse(localStorage.getItem("CustInfo"));
+        let feStr = {};
+        feStr["Motor"] = { "Brand": this.state.mortorData.label, "Spec": this.state.select.value.label };
+        feStr["GearBox"] = {
             "GBSeries": this.state.gbSelect.value.value, "GBModel": this.state.gbModelSelect.value.value,
             "Ratio": this.state.ratioSelect.value.value, "Shaft": this.state.shaftSelect.value.value,
             "Backlash": this.state.backlashSelect.value.value
         };
+        feStr["custId"] = CustInfo[0].custId;
+        feStr["isSale"] = this.state.isSale;
+        const searchValue = JSON.stringify(feStr);
+        const res = fetch(`https://localhost:44363/api/Order/GearBoxReSult?feStr=${searchValue}`, {
+            method: "GET",
+            headers: {
+            "Content-Type": "application/json"
+            } 
+        });
     }
 
     PublicOptions = (e) => {
