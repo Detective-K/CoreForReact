@@ -438,6 +438,7 @@ export class Gearbox extends Component {
         };
         feStr["custId"] = CustInfo[0].custId;
         feStr["isSale"] = this.state.isSale;
+        feStr["Range"] = this.state.range;
         const searchValue = JSON.stringify(feStr);
         const res = fetch(`https://localhost:44363/api/Order/GearBoxReSult?feStr=${searchValue}`, {
             method: "GET",
