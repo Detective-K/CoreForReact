@@ -437,6 +437,7 @@ export class Gearbox extends Component {
             "Backlash": this.state.backlashSelect.value.value
         };
         feStr["custId"] = CustInfo[0].custId;
+        feStr["email"] = CustInfo[0].email;
         feStr["isSale"] = this.state.isSale;
         feStr["Range"] = this.state.range;
         const searchValue = JSON.stringify(feStr);
